@@ -1,0 +1,413 @@
+/* Simple Seat Selection Page CSS */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+}
+
+.seat-selection-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+/* Header */
+.header-simple {
+  background: #03256c;
+  color: white;
+  padding: 20px 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Journey Info */
+.journey-info-section {
+  background: white;
+  padding: 15px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.journey-details {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  flex-wrap: wrap;
+}
+
+.journey-details span {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 40px 0;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+}
+
+/* Seat Section */
+.seat-section {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.seat-section h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 30px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.seat-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  border: 2px solid #ddd;
+}
+
+.seat-box.available {
+  background: white;
+  border-color: #2cb67d;
+}
+
+.seat-box.selected {
+  background: #2cb67d;
+  border-color: #2cb67d;
+}
+
+.seat-box.booked {
+  background: #ccc;
+  border-color: #999;
+}
+
+/* Bus Container */
+.bus-container {
+  border: 3px solid #03256c;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fafafa;
+}
+
+.driver-area {
+  background: #03256c;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Seats Area */
+.seats-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.seat-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.seat {
+  width: 55px;
+  height: 55px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.seat.available {
+  border-color: #2cb67d;
+  color: #333;
+}
+
+.seat.available:hover {
+  background: #e8f5f0;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(44, 182, 125, 0.3);
+}
+
+.seat.selected {
+  background: #2cb67d;
+  border-color: #2cb67d;
+  color: white;
+  transform: scale(1.05);
+}
+
+.seat.booked {
+  background: #ccc;
+  border-color: #999;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.seat:disabled {
+  cursor: not-allowed;
+}
+
+.aisle-gap {
+  width: 30px;
+}
+
+/* Booking Section */
+.booking-section {
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+.booking-card {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.booking-card h2 {
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+/* Info Box */
+.info-box {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row.total-row {
+  border-top: 2px solid #03256c;
+  padding-top: 15px;
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.blue {
+  color: #03256c;
+  font-size: 20px;
+}
+
+.total-amount {
+  color: #d32f2f;
+  font-size: 26px;
+}
+
+/* Form Area */
+.form-area {
+  margin-bottom: 25px;
+}
+
+.form-area h3 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #03256c;
+  box-shadow: 0 0 0 3px rgba(3, 37, 108, 0.1);
+}
+
+/* Buttons */
+.button-group {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.btn-back,
+.btn-proceed {
+  padding: 14px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-back {
+  background: white;
+  color: #666;
+  border: 2px solid #ddd;
+}
+
+.btn-back:hover {
+  background: #f9f9f9;
+}
+
+.btn-proceed {
+  background: #2cb67d;
+  color: white;
+}
+
+.btn-proceed:hover {
+  background: #25a068;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 182, 125, 0.3);
+}
+
+.btn-proceed:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.terms-text {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* Footer */
+.footer-simple {
+  background: #1a1a1a;
+  color: white;
+  padding: 30px 0;
+  text-align: center;
+  margin-top: auto;
+}
+
+.footer-simple p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .layout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-section {
+    position: static;
+  }
+
+  .journey-details {
+    font-size: 14px;
+    gap: 10px;
+  }
+
+  .seat {
+    width: 50px;
+    height: 50px;
+  }
+
+  .aisle-gap {
+    width: 20px;
+  }
+
+  .button-group {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .legend {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .seat {
+    width: 45px;
+    height: 45px;
+    font-size: 12px;
+  }
+
+  .aisle-gap {
+    width: 15px;
+  }
+
+  .journey-details {
+    flex-direction: column;
+    gap: 5px;
+  }
+}

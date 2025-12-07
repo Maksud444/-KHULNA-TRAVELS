@@ -1,0 +1,141 @@
+/* Header Styles */
+.main-header {
+  background: linear-gradient(135deg, #03256c 0%, #1e3c72 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 15px 0;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-section {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.logo-section:hover {
+  transform: scale(1.02);
+}
+
+.company-name {
+  font-size: 28px;
+  font-weight: 900;
+  margin: 0;
+  letter-spacing: 1px;
+  color: white;
+}
+
+.tagline {
+  font-size: 12px;
+  margin: 5px 0 0 0;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.nav-link {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.contact-info {
+  display: flex;
+  align-items: center;
+}
+
+.phone {
+  font-size: 16px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 10px 15px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-container {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .logo-section {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .company-name {
+    font-size: 24px;
+  }
+
+  .tagline {
+    font-size: 11px;
+  }
+
+  .nav-menu {
+    width: 100%;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .nav-link {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .contact-info {
+    width: 100%;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .phone {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .company-name {
+    font-size: 20px;
+  }
+
+  .nav-link {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .phone {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+}

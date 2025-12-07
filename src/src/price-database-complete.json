@@ -1,0 +1,417 @@
+{
+  "priceDatabase": {
+    "Kuakata": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Alipur": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Mohipur": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Hajipur": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Pakhimara": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 350
+    },
+    "Kolapara": {
+      "Khulna": 600,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Amtoli": {
+      "Khulna": 600,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Sakaria": {
+      "Khulna": 500,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Potuakhali": {
+      "Khulna": 500,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Pagla": {
+      "Khulna": 500,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Senanibas": {
+      "Khulna": 500,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Bakergonj": {
+      "Khulna": 600,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Rupatoli": {
+      "Khulna": 400,
+      "Noapara": 500,
+      "Jessore": 550
+    },
+    "Barishal": {
+      "Khulna": 400,
+      "Noapara": 500,
+      "Jessore": 550
+    },
+    "Monihar": {
+      "Jhalokathi": 750,
+      "Barishal": 750,
+      "Bakergonj": 750,
+      "Potuakhali": 750,
+      "Lebukhali": 750,
+      "Amtoli": 750,
+      "Kolapara": 750,
+      "Mohipur": 750,
+      "Alipur": 750,
+      "Kuakata": 750
+    },
+    "Jessore": {
+      "Jhalokathi": 550,
+      "Barishal": 550,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 750,
+      "Kolapara": 750,
+      "Mohipur": 750,
+      "Alipur": 750,
+      "Kuakata": 750
+    },
+    "Rupadia": {
+      "Jhalokathi": 700,
+      "Barishal": 700,
+      "Bakergonj": 700,
+      "Potuakhali": 700,
+      "Lebukhali": 700,
+      "Amtoli": 700,
+      "Kolapara": 700,
+      "Mohipur": 700,
+      "Alipur": 700,
+      "Kuakata": 750
+    },
+    "Basundia": {
+      "Jhalokathi": 700,
+      "Barishal": 700,
+      "Bakergonj": 700,
+      "Potuakhali": 700,
+      "Lebukhali": 700,
+      "Amtoli": 700,
+      "Kolapara": 700,
+      "Mohipur": 700,
+      "Alipur": 700,
+      "Kuakata": 750
+    },
+    "Noapara": {
+      "Jhalokathi": 550,
+      "Barishal": 550,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 750,
+      "Kolapara": 750,
+      "Mohipur": 750,
+      "Alipur": 750,
+      "Kuakata": 700
+    },
+    "Fultola": {
+      "Jhalokathi": 600,
+      "Barishal": 600,
+      "Bakergonj": 600,
+      "Potuakhali": 600,
+      "Lebukhali": 600,
+      "Amtoli": 600,
+      "Kolapara": 600,
+      "Mohipur": 600,
+      "Alipur": 600,
+      "Kuakata": 650
+    },
+    "Afilgat": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Garrison": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Shiromony": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Fulbari": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Daulatpur": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Notun Rasta": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Abu Naser": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Royel Mor": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Sonadanga": {
+      "Jhalokathi": 500,
+      "Barishal": 500,
+      "Bakergonj": 600,
+      "Potuakhali": 600,
+      "Lebukhali": 600,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Zero Point": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Jabusa": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Kudirbottola": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Katakhali": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Bagerhat": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Pirojpur": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Rajapur": {
+      "Jhalokathi": 650,
+      "Barishal": 650,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 650,
+      "Kolapara": 650,
+      "Mohipur": 650,
+      "Alipur": 650,
+      "Kuakata": 650
+    },
+    "Khulna": {
+      "Jhalokathi": 400,
+      "Barishal": 500,
+      "Bakergonj": 550,
+      "Potuakhali": 600,
+      "Lebukhali": 650,
+      "Amtoli": 700,
+      "Kolapara": 750,
+      "Mohipur": 800,
+      "Alipur": 850,
+      "Kuakata": 950
+    },
+    "Jhalokathi": {
+      "Barishal": 150,
+      "Bakergonj": 200,
+      "Potuakhali": 250,
+      "Lebukhali": 300,
+      "Amtoli": 400,
+      "Kolapara": 450,
+      "Mohipur": 500,
+      "Alipur": 550,
+      "Kuakata": 600
+    },
+    "Notullabad": {
+      "Barishal": 180,
+      "Bakergonj": 230,
+      "Potuakhali": 280,
+      "Lebukhali": 330,
+      "Amtoli": 430,
+      "Kolapara": 480,
+      "Mohipur": 530,
+      "Alipur": 580,
+      "Kuakata": 630
+    },
+    "Sakaria": {
+      "Khulna": 500,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Lebukhali": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 650
+    }
+  },
+  "routeTimes": {
+    "Kuakata-Khulna": "07:30 PM",
+    "Kuakata-Noapara": "07:30 PM",
+    "Kuakata-Jessore": "07:30 PM",
+    "Alipur-Khulna": "08:00 PM",
+    "Alipur-Noapara": "08:00 PM",
+    "Alipur-Jessore": "08:00 PM",
+    "Mohipur-Khulna": "08:15 PM",
+    "Mohipur-Noapara": "08:15 PM",
+    "Mohipur-Jessore": "08:15 PM",
+    "Hajipur-Khulna": "08:30 PM",
+    "Hajipur-Noapara": "08:30 PM",
+    "Hajipur-Jessore": "08:30 PM",
+    "Pakhimara-Khulna": "08:45 PM",
+    "Pakhimara-Noapara": "08:45 PM",
+    "Pakhimara-Jessore": "08:45 PM",
+    "Kolapara-Khulna": "09:00 PM",
+    "Kolapara-Noapara": "09:00 PM",
+    "Kolapara-Jessore": "09:00 PM",
+    "Amtoli-Khulna": "09:15 PM",
+    "Amtoli-Noapara": "09:15 PM",
+    "Amtoli-Jessore": "09:15 PM",
+    "Sakaria-Khulna": "09:30 PM",
+    "Potuakhali-Khulna": "08:00 PM",
+    "Potuakhali-Kuakata": "08:00 PM",
+    "Bakergonj-Khulna": "08:30 PM",
+    "Rupatoli-Khulna": "09:00 PM",
+    "Barishal-Khulna": "09:00 PM",
+    "Khulna-Kuakata": "10:00 PM",
+    "Khulna-Barishal": "09:00 PM",
+    "Jhalokathi-Kuakata": "11:00 PM",
+    "Jessore-Barishal": "09:30 PM",
+    "Noapara-Barishal": "09:30 PM",
+    "default": "09:00 PM"
+  }
+}

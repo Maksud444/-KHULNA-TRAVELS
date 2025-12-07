@@ -1,0 +1,783 @@
+/* Confirmation Page - Beautiful Success Animation */
+
+.confirmation-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Confetti Animation */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -10px;
+  animation: confetti-fall 3s linear forwards;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Container */
+.confirmation-container {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Success Card */
+.success-card {
+  background: white;
+  padding: 50px 30px;
+  border-radius: 25px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.8);
+  opacity: 0;
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.success-card.show {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Success Animation */
+.success-animation {
+  margin-bottom: 30px;
+}
+
+.success-circle {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.success-checkmark {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 3;
+  stroke: #2cb67d;
+  stroke-miterlimit: 10;
+  box-shadow: inset 0px 0px 0px #2cb67d;
+  animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
+}
+
+.checkmark-svg {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 3;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  box-shadow: inset 0px 0px 0px #2cb67d;
+}
+
+.checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 3;
+  stroke-miterlimit: 10;
+  stroke: #2cb67d;
+  fill: #2cb67d;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  stroke: #fff;
+  stroke-width: 3;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%, 100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 60px #2cb67d;
+  }
+}
+
+/* Success Message */
+.success-message {
+  margin-bottom: 30px;
+}
+
+.success-title {
+  font-size: 42px;
+  font-weight: 900;
+  color: #03256c;
+  margin-bottom: 15px;
+}
+
+.success-subtitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2cb67d;
+  margin-bottom: 10px;
+}
+
+.success-description {
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Booking ID Badge */
+.booking-id-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 15px 30px;
+  border-radius: 50px;
+  display: inline-block;
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.badge-label {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-right: 10px;
+}
+
+.badge-value {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.8s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 0.8s ease-out 0.6s forwards;
+  opacity: 0;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out 1s forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.animate-slide-up-delay {
+  animation: slideUp 0.8s ease-out 1.2s forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.animate-slide-up-delay-2 {
+  animation: slideUp 0.8s ease-out 1.4s forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.animate-fade-in-final {
+  animation: fadeIn 0.8s ease-out 1.6s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ticket Card */
+.ticket-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
+}
+
+.ticket-header {
+  background: linear-gradient(135deg, #03256c 0%, #1e3a8a 100%);
+  padding: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticket-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+}
+
+.logo-icon {
+  font-size: 32px;
+}
+
+.logo-text {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.ticket-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  border-radius: 50px;
+  color: white;
+}
+
+.ticket-status.success {
+  background: #2cb67d;
+}
+
+.status-icon {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.status-text {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Ticket Body */
+.ticket-body {
+  padding: 35px;
+}
+
+/* Journey Display */
+.journey-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 30px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.journey-point {
+  flex: 1;
+  text-align: center;
+}
+
+.point-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.point-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.point-name {
+  font-size: 22px;
+  font-weight: 900;
+  color: #03256c;
+}
+
+.journey-line {
+  flex: 1;
+  height: 3px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  margin: 0 20px;
+  position: relative;
+}
+
+.journey-bus {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 30px;
+  animation: moveBus 2s ease-in-out infinite;
+}
+
+@keyframes moveBus {
+  0%, 100% { left: 30%; }
+  50% { left: 70%; }
+}
+
+/* Ticket Details Grid */
+.ticket-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+  transition: all 0.3s ease;
+}
+
+.detail-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.detail-icon {
+  font-size: 28px;
+  margin-top: 5px;
+}
+
+.detail-info {
+  flex: 1;
+}
+
+.detail-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.detail-value {
+  font-size: 16px;
+  color: #222;
+  font-weight: 700;
+}
+
+.detail-value.seats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.seat-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+}
+
+/* Payment Info Section */
+.payment-info-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 25px;
+  border-radius: 15px;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.payment-info-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.payment-icon {
+  font-size: 24px;
+}
+
+.payment-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.payment-details {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.payment-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.payment-row:last-child {
+  border-bottom: none;
+}
+
+.payment-row.total {
+  padding-top: 20px;
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+  margin-top: 10px;
+}
+
+.payment-label {
+  font-size: 15px;
+  opacity: 0.9;
+}
+
+.payment-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.payment-value.success {
+  color: #2cb67d;
+  background: white;
+  padding: 5px 15px;
+  border-radius: 50px;
+}
+
+.payment-row.total .payment-value {
+  font-size: 24px;
+  color: #2cb67d;
+}
+
+/* QR Section */
+.qr-section {
+  text-align: center;
+  padding: 30px;
+  background: #f8f9fa;
+  border-radius: 15px;
+}
+
+.qr-code {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 15px;
+  background: white;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.qr-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-pattern {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  width: 80%;
+  height: 80%;
+}
+
+.qr-cell {
+  background: #03256c;
+  border-radius: 3px;
+  animation: qrPulse 1.5s ease-in-out infinite;
+}
+
+.qr-cell:nth-child(2) { animation-delay: 0.1s; }
+.qr-cell:nth-child(3) { animation-delay: 0.2s; }
+.qr-cell:nth-child(4) { animation-delay: 0.3s; }
+.qr-cell:nth-child(5) { animation-delay: 0.4s; }
+.qr-cell:nth-child(6) { animation-delay: 0.5s; }
+.qr-cell:nth-child(7) { animation-delay: 0.6s; }
+.qr-cell:nth-child(8) { animation-delay: 0.7s; }
+.qr-cell:nth-child(9) { animation-delay: 0.8s; }
+
+@keyframes qrPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.qr-instruction {
+  font-size: 14px;
+  color: #666;
+  font-weight: 600;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.btn {
+  padding: 15px 25px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-icon {
+  font-size: 20px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2cb67d 0%, #38ef7d 100%);
+  color: white;
+  box-shadow: 0 5px 20px rgba(44, 182, 125, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(44, 182, 125, 0.6);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+}
+
+.btn-outline {
+  background: white;
+  color: #03256c;
+  border: 2px solid #03256c;
+}
+
+.btn-outline:hover {
+  background: #03256c;
+  color: white;
+}
+
+/* Important Notes */
+.important-notes {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.notes-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #03256c;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notes-list li {
+  padding: 12px 0;
+  padding-left: 35px;
+  position: relative;
+  color: #555;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.notes-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #2cb67d;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Thank You Section */
+.thank-you-section {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.thank-you-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.thank-you-title {
+  font-size: 32px;
+  font-weight: 900;
+  color: #03256c;
+  margin-bottom: 15px;
+}
+
+.thank-you-message {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+
+.social-share {
+  margin-top: 25px;
+}
+
+.social-share p {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.share-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.share-btn {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.share-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.share-btn.facebook {
+  background: #1877f2;
+}
+
+.share-btn.whatsapp {
+  background: #25d366;
+}
+
+.share-btn.messenger {
+  background: #0084ff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .confirmation-page {
+    padding: 20px 10px;
+  }
+
+  .success-card {
+    padding: 40px 20px;
+  }
+
+  .success-title {
+    font-size: 32px;
+  }
+
+  .success-subtitle {
+    font-size: 22px;
+  }
+
+  .ticket-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .journey-display {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .journey-line {
+    width: 3px;
+    height: 80px;
+    margin: 0;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .journey-bus {
+    animation: moveBusVertical 2s ease-in-out infinite;
+  }
+
+  @keyframes moveBusVertical {
+    0%, 100% { top: 30%; }
+    50% { top: 70%; }
+  }
+}
+
+@media print {
+  .action-buttons,
+  .social-share {
+    display: none;
+  }
+}

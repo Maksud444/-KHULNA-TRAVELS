@@ -1,0 +1,205 @@
+{
+  "schedules": {
+    "morning": {
+      "name": "Morning Schedule (Kuakata → Khulna/Noapara/Jessore)",
+      "route": "Kuakata to Khulna Region",
+      "stops": [
+        { "location": "Kuakata", "type": "Boarding", "time": "07:30 PM" },
+        { "location": "Alipur", "type": "Boarding", "time": "07:45 PM" },
+        { "location": "Mohipur", "type": "Boarding", "time": "07:50 PM" },
+        { "location": "Hajipur", "type": "Boarding", "time": "07:55 PM" },
+        { "location": "Pakhimara", "type": "Boarding", "time": "08:15 PM" },
+        { "location": "Kolapara", "type": "Boarding", "time": "08:30 PM" },
+        { "location": "Amtoli", "type": "Boarding", "time": "09:00 PM" },
+        { "location": "Sakaria", "type": "Boarding", "time": "09:15 PM" },
+        { "location": "Potuakhali", "type": "Boarding", "time": "09:30 PM" },
+        { "location": "Pagla", "type": "Boarding", "time": "09:35 PM" },
+        { "location": "Senanibas", "type": "Boarding", "time": "10:00 PM" },
+        { "location": "Bakergonj", "type": "Boarding", "time": "10:30 PM" },
+        { "location": "Rupatoli", "type": "Boarding", "time": "10:35 PM" },
+        { "location": "Barishal", "type": "Boarding", "time": "10:55 PM" },
+        { "location": "Noapara", "type": "Dropping", "time": "12:25 AM" },
+        { "location": "Khulna", "type": "Dropping", "time": "12:55 AM" },
+        { "location": "Jessore", "type": "Dropping", "time": "01:55 AM" }
+      ]
+    },
+    "night": {
+      "name": "Night Schedule (Khulna → Kuakata)",
+      "route": "Khulna Region to Kuakata",
+      "stops": [
+        { "location": "Monihar", "type": "Boarding", "time": "06:30 PM" },
+        { "location": "Jessore", "type": "Boarding", "time": "07:00 PM" },
+        { "location": "Rupadia", "type": "Boarding", "time": "07:30 PM" },
+        { "location": "Basundia", "type": "Boarding", "time": "08:00 PM" },
+        { "location": "Noapara", "type": "Boarding", "time": "08:30 PM" },
+        { "location": "Fultola", "type": "Boarding", "time": "08:45 PM" },
+        { "location": "Afilgat", "type": "Boarding", "time": "08:55 PM" },
+        { "location": "Garrison", "type": "Boarding", "time": "09:05 PM" },
+        { "location": "Shiromony", "type": "Boarding", "time": "09:10 PM" },
+        { "location": "Fulbari", "type": "Boarding", "time": "09:20 PM" },
+        { "location": "Daulatpur", "type": "Boarding", "time": "09:30 PM" },
+        { "location": "Notun Rasta", "type": "Boarding", "time": "09:35 PM" },
+        { "location": "Abu Naser", "type": "Boarding", "time": "09:40 PM" },
+        { "location": "Royel Mor", "type": "Boarding", "time": "09:50 PM" },
+        { "location": "Sonadanga", "type": "Boarding", "time": "10:00 PM" },
+        { "location": "Zero Point", "type": "Boarding", "time": "10:10 PM" },
+        { "location": "Jabusa", "type": "Boarding", "time": "10:15 PM" },
+        { "location": "Kudirbottola", "type": "Boarding", "time": "10:20 PM" },
+        { "location": "Katakhali", "type": "Boarding", "time": "10:30 PM" },
+        { "location": "Bagerhat", "type": "Boarding", "time": "11:00 PM" },
+        { "location": "Pirojpur", "type": "Boarding", "time": "12:00 AM" },
+        { "location": "Rajapur", "type": "Boarding", "time": "12:15 AM" },
+        { "location": "Jhalokathi", "type": "Boarding+Dropping", "time": "12:30 AM" },
+        { "location": "Barishal", "type": "Boarding+Dropping", "time": "01:00 AM" },
+        { "location": "Rupatoli", "type": "Boarding", "time": "01:35 AM" },
+        { "location": "Notullabad", "type": "Boarding", "time": "01:50 AM" },
+        { "location": "Bakergonj", "type": "Boarding+Dropping", "time": "02:05 AM" },
+        { "location": "Potuakhali", "type": "Boarding+Dropping", "time": "02:20 AM" },
+        { "location": "Lebukhali", "type": "Dropping", "time": "02:35 AM" },
+        { "location": "Amtoli", "type": "Dropping", "time": "02:50 AM" },
+        { "location": "Kolapara", "type": "Dropping", "time": "03:05 AM" },
+        { "location": "Mohipur", "type": "Dropping", "time": "03:20 AM" },
+        { "location": "Alipur", "type": "Dropping", "time": "03:35 AM" },
+        { "location": "Kuakata", "type": "Dropping", "time": "03:50 AM" }
+      ]
+    }
+  },
+  "priceDatabase": {
+    "Kuakata": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Alipur": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Mohipur": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Hajipur": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Pakhimara": {
+      "Khulna": 650,
+      "Noapara": 650,
+      "Jessore": 350
+    },
+    "Kolapara": {
+      "Khulna": 600,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Amtoli": {
+      "Khulna": 600,
+      "Noapara": 650,
+      "Jessore": 650
+    },
+    "Sakaria": {
+      "Khulna": 500,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Potuakhali": {
+      "Khulna": 500,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Pagla": {
+      "Khulna": 500,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Senanibas": {
+      "Khulna": 500,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Bakergonj": {
+      "Khulna": 600,
+      "Noapara": 600,
+      "Jessore": 650
+    },
+    "Rupatoli": {
+      "Khulna": 400,
+      "Noapara": 500,
+      "Jessore": 550
+    },
+    "Barishal": {
+      "Khulna": 400,
+      "Noapara": 500,
+      "Jessore": 550
+    },
+    "Monihar": {
+      "Kuakata": 750
+    },
+    "Jessore": {
+      "Barishal": 550,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 750,
+      "Kolapara": 750,
+      "Mohipur": 750,
+      "Alipur": 750,
+      "Kuakata": 750
+    },
+    "Rupadia": {
+      "Kuakata": 750
+    },
+    "Basundia": {
+      "Kuakata": 750
+    },
+    "Noapara": {
+      "Barishal": 550,
+      "Bakergonj": 650,
+      "Potuakhali": 650,
+      "Lebukhali": 650,
+      "Amtoli": 750,
+      "Kolapara": 750,
+      "Mohipur": 750,
+      "Alipur": 750,
+      "Kuakata": 700
+    },
+    "Fultola": {
+      "Kuakata": 650
+    },
+    "Afilgat": {
+      "Barishal": 650,
+      "Kuakata": 650
+    },
+    "Garrison": {
+      "Kuakata": 650
+    },
+    "Shiromony": {
+      "Kuakata": 650
+    },
+    "Fulbari": {
+      "Kuakata": 650
+    },
+    "Daulatpur": {
+      "Kuakata": 650
+    },
+    "Notun Rasta": {
+      "Kuakata": 650
+    },
+    "Abu Naser": {
+      "Kuakata": 650
+    },
+    "Royel Mor": {
+      "Kuakata": 650
+    },
+    "Sonadanga": {
+      "Barishal": 500,
+      "Bakergonj": 600,
+      "Potuakhali": 600,
+      "Lebukhali": 600,
+      "Amtoli": 650
+    }
+  }
+}

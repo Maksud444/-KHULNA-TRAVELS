@@ -194,15 +194,7 @@ const BusListPage = () => {
           </select>
         </div>
 
-        <div className="sort-group">
-          <label>সাজান:</label>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="departure">ছাড়ার সময়</option>
-            <option value="price-low">ভাড়া (কম)</option>
-            <option value="price-high">ভাড়া (বেশি)</option>
-            <option value="seats">আসন সংখ্যা</option>
-          </select>
-        </div>
+    
       </div>
 
       {/* Bus List */}

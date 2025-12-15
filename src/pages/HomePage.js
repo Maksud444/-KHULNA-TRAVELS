@@ -4,12 +4,21 @@ import './HomePage.css';
 
 const HomePage = () => {
   const navigate = useNavigate();
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isSearching, setIsSearching] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [ticketCount, setTicketCount] = useState(0);
   const [activeAnnouncement, setActiveAnnouncement] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Hero Images
+  const heroImages = [
+    '/images/Khulnatravelsgolden.png',
+    '/images/Khulnatravelswhite.png',
+    '/images/Khulnatravelsdual.png'
+  ];
 
   // All FROM locations (39 total)
   const allFromLocations = [
@@ -22,9 +31,8 @@ const HomePage = () => {
     'Pirojpur', 'Rajapur', 'Jhalokathi', 'Notullabad', 'Khulna'
   ];
 
-  // Route mapping based on 4 groups - exact structure as requested
+  // Route mapping
   const routeMapping = {
-    // GROUP 1: Kuakata and related FROM locations → Khulna, Noapara, Jessore
     'Kuakata': ['Khulna', 'Noapara', 'Jessore'],
     'Alipur': ['Khulna', 'Noapara', 'Jessore'],
     'Mohipur': ['Khulna', 'Noapara', 'Jessore'],
@@ -35,14 +43,10 @@ const HomePage = () => {
     'Sakaria': ['Khulna', 'Noapara', 'Jessore'],
     'Pagla': ['Khulna', 'Noapara', 'Jessore'],
     'Senanibas': ['Khulna', 'Noapara', 'Jessore'],
-    
-    // GROUP 2: Potuakhali and related FROM locations
     'Potuakhali': ['Khulna', 'Noapara', 'Jessore', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
     'Bakergonj': ['Khulna', 'Noapara', 'Jessore', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
     'Rupatoli': ['Khulna', 'Noapara', 'Jessore', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
     'Barishal': ['Khulna', 'Noapara', 'Jessore', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    
-    // GROUP 3: Monihar/Khulna area and related FROM locations
     'Monihar': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
     'Jessore': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
     'Rupadia': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
@@ -66,13 +70,10 @@ const HomePage = () => {
     'Pirojpur': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
     'Rajapur': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
     'Khulna': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    
-    // GROUP 4: Jhalokathi and related FROM locations
     'Jhalokathi': ['Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
     'Notullabad': ['Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata']
   };
 
-  // Get TO locations based on selected FROM
   const getToLocations = (from) => {
     if (!from) return [];
     return routeMapping[from] || [];
@@ -85,7 +86,6 @@ const HomePage = () => {
     countType: 'All'
   });
 
-  // Available TO locations based on FROM selection
   const availableToLocations = getToLocations(searchData.from);
 
   const [showFromDropdown, setShowFromDropdown] = useState(false);
@@ -108,6 +108,15 @@ const HomePage = () => {
       text: 'টিকেট বাতিল করতে চাইলে যাত্রার ২৪ ঘন্টা আগে জানাতে হবে। ১০% চার্জ প্রযোজ্য।'
     }
   ];
+
+  // Auto slide images
+  useEffect(() => {
+    const slideInterval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(slideInterval);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -171,7 +180,6 @@ const HomePage = () => {
     const newFrom = searchData.to;
     const newTo = searchData.from;
     
-    // Check if the swap is valid (new FROM has routes to new TO)
     const newToLocations = getToLocations(newFrom);
     if (newFrom && newToLocations.includes(newTo)) {
       setSearchData({
@@ -180,7 +188,6 @@ const HomePage = () => {
         to: newTo
       });
     } else {
-      // If invalid, just swap FROM and reset TO
       setSearchData({
         ...searchData,
         from: newFrom,
@@ -193,7 +200,7 @@ const HomePage = () => {
     setSearchData({
       ...searchData,
       from: location,
-      to: '' // Reset TO when FROM changes
+      to: ''
     });
     setShowFromDropdown(false);
   };
@@ -223,7 +230,6 @@ const HomePage = () => {
 
     setTimeout(() => {
       setIsSearching(false);
-      // FIXED: Changed from '/buses' to '/bus-list'
       navigate('/bus-list', { 
         state: {
           from: searchData.from,
@@ -232,6 +238,18 @@ const HomePage = () => {
         }
       });
     }, 1500);
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
   };
 
   const faqItems = [
@@ -264,7 +282,7 @@ const HomePage = () => {
   return (
     <div className="homepage-professional">
       {showNotification && (
-        <div className="toast-notification slide-in">
+        <div className="toast-notification">
           <span className="toast-icon">🎉</span>
           <span>স্বাগতম! আজই বুক করুন বিশেষ ছাড়ে!</span>
         </div>
@@ -275,7 +293,7 @@ const HomePage = () => {
           <div className="info-bar-content">
             <div className="info-item">
               <span className="icon">📞</span>
-              <span>হটলাইন: ০১৭০০-০০০০০০</span>
+              <span>হটলাইন: ০১৮৩৪২০১৬২৮</span>
             </div>
             <div className="info-item">
               <span className="icon">📧</span>
@@ -309,20 +327,53 @@ const HomePage = () => {
       </div>
 
       <section className="hero-pro">
-        <div className="hero-overlay"></div>
-        <div className="hero-bg-pattern"></div>
+        {/* Image Carousel */}
+        <div className="hero-carousel">
+          <div className="carousel-container">
+            {heroImages.map((image, index) => (
+              <div
+                key={index}
+                className={`carousel-slide ${index === currentSlide ? 'active' : ''}`}
+                style={{ backgroundImage: `url(${image})` }}
+              >
+                <div className="carousel-overlay"></div>
+              </div>
+            ))}
+          </div>
+
+          {/* Navigation Arrows */}
+          <button className="carousel-arrow prev" onClick={prevSlide}>
+            ‹
+          </button>
+          <button className="carousel-arrow next" onClick={nextSlide}>
+            ›
+          </button>
+
+          {/* Dots */}
+          <div className="carousel-dots">
+            {heroImages.map((_, index) => (
+              <span
+                key={index}
+                className={`dot ${index === currentSlide ? 'active' : ''}`}
+                onClick={() => goToSlide(index)}
+              ></span>
+            ))}
+          </div>
+        </div>
+
+        {/* Content Over Carousel */}
         <div className="container">
           <div className="hero-content-pro">
-            <h1 className="hero-title animate-fade-in">
+            <h1 className="hero-title">
               অনলাইন টিকেটিং সহজ হয়েছে!
             </h1>
-            <p className="hero-subtitle animate-fade-in-delay">
+            <p className="hero-subtitle">
               দেশের যেকোনো প্রান্ত থেকে সহজেই বুক করুন আপনার বাস টিকেট
             </p>
 
             <div className="live-stats">
               <div className="stat-card">
-                <div className="stat-number counter">{ticketCount.toLocaleString('bn-BD')}</div>
+                <div className="stat-number">{ticketCount.toLocaleString('bn-BD')}</div>
                 <div className="stat-label">টিকেট বিক্রি</div>
               </div>
               <div className="stat-card">
@@ -350,7 +401,7 @@ const HomePage = () => {
                       required
                     />
                     {showFromDropdown && (
-                      <div className="dropdown-menu animate-slide-down">
+                      <div className="dropdown-menu">
                         {allFromLocations.filter(loc => 
                           loc.toLowerCase().includes(searchData.from.toLowerCase())
                         ).map((location, idx) => (
@@ -396,7 +447,7 @@ const HomePage = () => {
                       required
                     />
                     {showToDropdown && searchData.from && (
-                      <div className="dropdown-menu animate-slide-down">
+                      <div className="dropdown-menu">
                         {availableToLocations.length > 0 ? (
                           availableToLocations.filter(loc => 
                             loc.toLowerCase().includes(searchData.to.toLowerCase())
@@ -452,10 +503,7 @@ const HomePage = () => {
               </div>
             </form>
 
-            <div className="current-date-display">
-              <span className="icon">📅</span>
-              আজকের তারিখ: {formatDate(currentDate)}
-            </div>
+           
           </div>
         </div>
       </section>
@@ -574,7 +622,7 @@ const HomePage = () => {
                   <span className="faq-icon">{expandedFaq === idx ? '−' : '+'}</span>
                 </div>
                 {expandedFaq === idx && (
-                  <div className="faq-answer-pro animate-slide-down">
+                  <div className="faq-answer-pro">
                     {item.answer}
                   </div>
                 )}
@@ -583,8 +631,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-   
     </div>
   );
 };

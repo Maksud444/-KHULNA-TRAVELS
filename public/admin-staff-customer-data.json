@@ -1,0 +1,213 @@
+{
+  "admins": [
+    {
+      "userId": "ADMIN001",
+      "name": "মোহাম্মদ হাসান",
+      "email": "admin@khulnatravels.com",
+      "phone": "01700000001",
+      "password": "admin123",
+      "role": "admin",
+      "joinDate": "2020-01-01",
+      "permissions": ["all"]
+    }
+  ],
+  "counterStaff": [
+    {
+      "userId": "STAFF001",
+      "name": "আব্দুল করিম",
+      "email": "counter1@khulnatravels.com",
+      "phone": "01711111111",
+      "password": "staff123",
+      "role": "counter_staff",
+      "counterLocation": "Khulna Zero Point",
+      "joinDate": "2022-03-15",
+      "shift": "Morning (6 AM - 2 PM)",
+      "permissions": ["bookings", "tickets", "payments"]
+    },
+    {
+      "userId": "STAFF002",
+      "name": "রহিমা খাতুন",
+      "email": "counter2@khulnatravels.com",
+      "phone": "01722222222",
+      "password": "staff456",
+      "role": "counter_staff",
+      "counterLocation": "Khulna Sonadanga",
+      "joinDate": "2023-01-10",
+      "shift": "Evening (2 PM - 10 PM)",
+      "permissions": ["bookings", "tickets", "payments"]
+    }
+  ],
+  "customers": [
+    {
+      "userId": "CUST001",
+      "name": "রহিম আহমেদ",
+      "email": "rahim@example.com",
+      "phone": "01712345678",
+      "password": "password123",
+      "role": "customer",
+      "address": "১২৩, সোনাদাঙ্গা, খুলনা",
+      "city": "Khulna",
+      "joinDate": "2024-01-15",
+      "totalBookings": 12
+    },
+    {
+      "userId": "CUST002",
+      "name": "ফাতেমা খাতুন",
+      "email": "fatema@example.com",
+      "phone": "01823456789",
+      "password": "password456",
+      "role": "customer",
+      "address": "৪৫, শিরোমনি, খুলনা",
+      "city": "Khulna",
+      "joinDate": "2024-03-20",
+      "totalBookings": 8
+    }
+  ],
+  "statistics": {
+    "totalBuses": 45,
+    "totalRoutes": 77,
+    "todayBookings": 156,
+    "monthlyRevenue": 2450000,
+    "activeCustomers": 1523,
+    "totalStaff": 89,
+    "availableSeats": 1680,
+    "occupancyRate": 78
+  },
+  "recentBookings": [
+    {
+      "bookingId": "BK2024120156",
+      "customerName": "আলী হোসেন",
+      "from": "Khulna",
+      "to": "Kuakata",
+      "journeyDate": "2024-12-15",
+      "seats": ["A1", "A2"],
+      "amount": 1740,
+      "status": "confirmed",
+      "bookingTime": "2024-12-14 10:30 AM",
+      "bookedBy": "STAFF001"
+    },
+    {
+      "bookingId": "BK2024120155",
+      "customerName": "সালমা বেগম",
+      "from": "Jessore",
+      "to": "Dhaka",
+      "journeyDate": "2024-12-16",
+      "seats": ["B3"],
+      "amount": 650,
+      "status": "confirmed",
+      "bookingTime": "2024-12-14 09:45 AM",
+      "bookedBy": "STAFF002"
+    },
+    {
+      "bookingId": "BK2024120154",
+      "customerName": "করিম মিয়া",
+      "from": "Khulna",
+      "to": "Dhaka",
+      "journeyDate": "2024-12-15",
+      "seats": ["C1", "C2", "C3"],
+      "amount": 1950,
+      "status": "pending",
+      "bookingTime": "2024-12-14 08:15 AM",
+      "bookedBy": "Online"
+    }
+  ],
+  "buses": [
+    {
+      "busId": "BUS001",
+      "busName": "KHULNA TRAVELS - 01",
+      "busNumber": "DHK-GA-12-3456",
+      "type": "AC",
+      "totalSeats": 40,
+      "route": "Khulna - Dhaka",
+      "status": "active",
+      "lastMaintenance": "2024-11-15",
+      "nextMaintenance": "2024-12-15"
+    },
+    {
+      "busId": "BUS002",
+      "busName": "KHULNA TRAVELS - 02",
+      "busNumber": "DHK-GA-12-7890",
+      "type": "Non-AC",
+      "totalSeats": 45,
+      "route": "Khulna - Kuakata",
+      "status": "active",
+      "lastMaintenance": "2024-11-20",
+      "nextMaintenance": "2024-12-20"
+    },
+    {
+      "busId": "BUS003",
+      "busName": "KHULNA TRAVELS - 03",
+      "busNumber": "DHK-GA-12-4567",
+      "type": "AC",
+      "totalSeats": 40,
+      "route": "Jessore - Dhaka",
+      "status": "maintenance",
+      "lastMaintenance": "2024-12-10",
+      "nextMaintenance": "2024-12-17"
+    }
+  ],
+  "routes": [
+    {
+      "routeId": "ROUTE001",
+      "from": "Khulna",
+      "to": "Dhaka",
+      "distance": "280 km",
+      "duration": "6 hours",
+      "fare": 650,
+      "activeBuses": 8,
+      "dailyTrips": 12
+    },
+    {
+      "routeId": "ROUTE002",
+      "from": "Khulna",
+      "to": "Kuakata",
+      "distance": "220 km",
+      "duration": "5.5 hours",
+      "fare": 870,
+      "activeBuses": 6,
+      "dailyTrips": 8
+    },
+    {
+      "routeId": "ROUTE003",
+      "from": "Jessore",
+      "to": "Dhaka",
+      "distance": "180 km",
+      "duration": "4 hours",
+      "fare": 550,
+      "activeBuses": 5,
+      "dailyTrips": 10
+    }
+  ],
+  "staff": [
+    {
+      "staffId": "EMP001",
+      "name": "আব্দুল করিম",
+      "role": "Counter Staff",
+      "location": "Khulna Zero Point",
+      "phone": "01711111111",
+      "joinDate": "2022-03-15",
+      "salary": 25000,
+      "status": "active"
+    },
+    {
+      "staffId": "EMP002",
+      "name": "রহিমা খাতুন",
+      "role": "Counter Staff",
+      "location": "Khulna Sonadanga",
+      "phone": "01722222222",
+      "joinDate": "2023-01-10",
+      "salary": 23000,
+      "status": "active"
+    },
+    {
+      "staffId": "EMP003",
+      "name": "জামাল উদ্দিন",
+      "role": "Driver",
+      "location": "Khulna",
+      "phone": "01733333333",
+      "joinDate": "2021-06-20",
+      "salary": 30000,
+      "status": "active"
+    }
+  ]
+}

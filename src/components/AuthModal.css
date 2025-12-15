@@ -1,0 +1,490 @@
+/* Auth Modal - Red Theme with Illustrations */
+
+.auth-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.auth-modal-container {
+  background: white;
+  border-radius: 20px;
+  max-width: 1000px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Close Button */
+.modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #f5f5f5;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.modal-close-btn:hover {
+  background: #e0e0e0;
+  transform: rotate(90deg);
+}
+
+/* Content Layout */
+.auth-modal-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 600px;
+}
+
+/* Left Side - Form Section */
+.auth-form-section {
+  padding: 50px 40px;
+  background: #f8f8f8;
+}
+
+/* Tabs */
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 15px;
+  background: white;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: #333;
+}
+
+.auth-tab.active {
+  background: #d32f2f;
+  color: white;
+}
+
+.auth-tab:not(.active):hover {
+  background: #f5f5f5;
+}
+
+/* Form */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-field input {
+  padding: 14px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #333;
+  background: white;
+  transition: all 0.3s;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: #d32f2f;
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+}
+
+.form-field input::placeholder {
+  color: #aaa;
+}
+
+.error-text {
+  color: #d32f2f;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Form Row for 2 columns */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+/* Submit Button */
+.auth-submit-btn {
+  background: #d32f2f;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+.auth-submit-btn:hover:not(:disabled) {
+  background: #b71c1c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Footer Links */
+.auth-footer-links {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.auth-footer-links p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.link-red {
+  color: #d32f2f;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.link-red:hover {
+  color: #b71c1c;
+  text-decoration: underline;
+}
+
+/* Right Side - Illustration Section */
+.auth-illustration-section {
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.illustration-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Sun */
+.sun {
+  position: absolute;
+  top: 50px;
+  right: 80px;
+  width: 80px;
+  height: 80px;
+  background: #FDB813;
+  border-radius: 50%;
+  animation: sunPulse 3s ease-in-out infinite;
+}
+
+@keyframes sunPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.9; }
+}
+
+.sun-rays {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: 
+    linear-gradient(0deg, transparent 45%, #FDB813 47%, #FDB813 53%, transparent 55%),
+    linear-gradient(45deg, transparent 45%, #FDB813 47%, #FDB813 53%, transparent 55%),
+    linear-gradient(90deg, transparent 45%, #FDB813 47%, #FDB813 53%, transparent 55%),
+    linear-gradient(135deg, transparent 45%, #FDB813 47%, #FDB813 53%, transparent 55%);
+  opacity: 0.6;
+  animation: rayRotate 8s linear infinite;
+}
+
+@keyframes rayRotate {
+  to { transform: rotate(360deg); }
+}
+
+/* Clouds */
+.cloud {
+  position: absolute;
+  background: #ccc;
+  border-radius: 100px;
+  opacity: 0.7;
+}
+
+.cloud::before,
+.cloud::after {
+  content: '';
+  position: absolute;
+  background: #ccc;
+  border-radius: 100px;
+}
+
+.cloud-1 {
+  width: 60px;
+  height: 20px;
+  top: 60px;
+  left: 50px;
+  animation: cloudFloat1 15s linear infinite;
+}
+
+.cloud-1::before {
+  width: 30px;
+  height: 30px;
+  top: -15px;
+  left: 10px;
+}
+
+.cloud-1::after {
+  width: 40px;
+  height: 25px;
+  top: -10px;
+  right: 10px;
+}
+
+.cloud-2 {
+  width: 50px;
+  height: 18px;
+  top: 100px;
+  right: 40px;
+  animation: cloudFloat2 12s linear infinite;
+}
+
+.cloud-2::before {
+  width: 25px;
+  height: 25px;
+  top: -12px;
+  left: 8px;
+}
+
+.cloud-3 {
+  width: 45px;
+  height: 16px;
+  top: 80px;
+  left: 120px;
+  animation: cloudFloat3 18s linear infinite;
+}
+
+@keyframes cloudFloat1 {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(20px); }
+}
+
+@keyframes cloudFloat2 {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-15px); }
+}
+
+@keyframes cloudFloat3 {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(25px); }
+}
+
+/* Bus */
+.bus-container {
+  position: absolute;
+  bottom: 120px;
+  right: 50px;
+  width: 250px;
+  animation: busMove 3s ease-in-out infinite;
+}
+
+@keyframes busMove {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-10px); }
+}
+
+.bus-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+}
+
+/* Trees */
+.tree {
+  position: absolute;
+  bottom: 100px;
+}
+
+.tree-trunk {
+  width: 8px;
+  height: 30px;
+  background: #8B4513;
+  margin: 0 auto;
+}
+
+.tree-top {
+  width: 40px;
+  height: 40px;
+  background: #E8A5A5;
+  border-radius: 50%;
+  position: relative;
+  top: -20px;
+}
+
+.tree-1 {
+  left: 60px;
+}
+
+.tree-2 {
+  left: 120px;
+  bottom: 110px;
+}
+
+.tree-2 .tree-top {
+  background: #F8BBD0;
+}
+
+.tree-3 {
+  right: 140px;
+}
+
+.tree-3 .tree-top {
+  background: #FFB6C1;
+}
+
+/* Ticket Counter */
+.ticket-counter {
+  position: absolute;
+  bottom: 80px;
+  right: 320px;
+  width: 80px;
+}
+
+.counter-building {
+  width: 80px;
+  height: 60px;
+  background: #999;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+}
+
+.counter-building::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: -5px;
+  right: -5px;
+  height: 20px;
+  background: #777;
+  border-radius: 4px 4px 0 0;
+}
+
+.counter-window {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 30px;
+  background: #E0E0E0;
+  border-radius: 4px;
+  border: 3px solid #666;
+}
+
+.counter-window::after {
+  content: '🎫';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .auth-modal-content {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-illustration-section {
+    display: none;
+  }
+
+  .auth-form-section {
+    padding: 40px 30px;
+  }
+}
+
+@media (max-width: 576px) {
+  .auth-modal-container {
+    max-height: 95vh;
+    margin: 10px;
+  }
+
+  .auth-form-section {
+    padding: 30px 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-tab {
+    font-size: 14px;
+    padding: 12px;
+  }
+}

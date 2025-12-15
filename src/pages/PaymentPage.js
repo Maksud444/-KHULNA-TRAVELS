@@ -6,11 +6,14 @@ const PaymentPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const bookingData = location.state || {
-    bus: { name: 'KHULNA TRAVELS', type: 'NON AC', fare: 950 },
-    selectedSeats: ['A1', 'A2'],
-    passengerDetails: { name: '', phone: '', boardingPoint: '' },
-    searchData: { from: 'Khulna', to: 'Kuakata', journeyDate: new Date().toISOString().split('T')[0] }
+  const rawState = location.state || {};
+
+  const bookingData = {
+    bus: rawState.bus || { name: 'KHULNA TRAVELS', type: 'NON AC', fare: 950 },
+    selectedSeats: rawState.selectedSeats || [],
+    passengerDetails: rawState.passengerDetails || { name: '', phone: '', boardingPoint: '' },
+    searchData: rawState.searchData || { from: 'Khulna', to: 'Kuakata', journeyDate: new Date().toISOString().split('T')[0] },
+    totalAmount: rawState.totalAmount || 0
   };
 
   const [paymentMethod, setPaymentMethod] = useState('');
@@ -78,9 +81,9 @@ const PaymentPage = () => {
   ];
 
   // Calculate prices - NO VAT
-  const basePrice = bookingData.bus.fare * bookingData.selectedSeats.length;
+  const basePrice = (bookingData.bus?.fare || 0) * (bookingData.selectedSeats?.length || 0);
   const serviceFee = 0; // No service charge
-  const totalPrice = basePrice + serviceFee; // NO VAT
+  const totalPrice = bookingData.totalAmount || (basePrice + serviceFee); // NO VAT
 
   // Countdown timer
   useEffect(() => {
@@ -319,7 +322,7 @@ const PaymentPage = () => {
                 <h4 className="breakdown-title">মূল্য বিবরণ</h4>
                 <div className="price-row">
                   <span className="price-label">
-                    টিকেট মূল্য ({bookingData.selectedSeats.length} × ৳{bookingData.bus.fare})
+                    টিকেট মূল্য ({bookingData.selectedSeats?.length || 0} × ৳{bookingData.bus?.fare || 0})
                   </span>
                   <span className="price-value">৳{basePrice}</span>
                 </div>

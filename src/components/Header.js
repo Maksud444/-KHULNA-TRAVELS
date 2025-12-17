@@ -16,6 +16,19 @@ const Header = () => {
   });
   const [error, setError] = useState('');
   const [loadingForm, setLoadingForm] = useState(false);
+  // Mobile menu toggle
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Lock body scroll when mobile menu open
+  React.useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
 
   const handleLogout = () => {
     logout();
@@ -102,56 +115,67 @@ const Header = () => {
       <header className="header">
         <div className="container">
           <div className="header-content">
-            <Link to="/" className="logo">
+            <Link to="/" className="logo" onClick={() => setMobileOpen(false)}>
               <h1>KHULNA TRAVELS</h1>
             </Link>
 
-            <nav className="nav-menu">
+            {/* Mobile menu toggle */}
+            <button
+              className={`mobile-toggle ${mobileOpen ? 'open' : ''}`}
+              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+            </button>
+
+            <nav className={`nav-menu ${mobileOpen ? 'nav-open' : ''}`}>
               {!isAuthenticated ? (
                 <>
-                  <Link to="/" className="nav-link">Home</Link>
-                  <Link to="/about" className="nav-link">About</Link>
-                  <Link to="/routes" className="nav-link">Routes</Link>
-                  <Link to="/contact" className="nav-link">Contact</Link>
+                  <Link to="/" className="nav-link" onClick={() => setMobileOpen(false)}>Home</Link>
+                  <Link to="/about" className="nav-link" onClick={() => setMobileOpen(false)}>About</Link>
+                  <Link to="/routes" className="nav-link" onClick={() => setMobileOpen(false)}>Routes</Link>
+                  <Link to="/contact" className="nav-link" onClick={() => setMobileOpen(false)}>Contact</Link>
                   <button 
                     className="auth-btn login-btn"
-                    onClick={() => handleAuthModalOpen('login')}
+                    onClick={() => { setMobileOpen(false); handleAuthModalOpen('login'); }}
                   >
                     Login
                   </button>
                   <button 
                     className="auth-btn register-btn"
-                    onClick={() => handleAuthModalOpen('register')}
+                    onClick={() => { setMobileOpen(false); handleAuthModalOpen('register'); }}
                   >
                     Register
                   </button>
                 </>
               ) : (
                 <>
-                  <Link to="/" className="nav-link">Home</Link>
+                  <Link to="/" className="nav-link" onClick={() => setMobileOpen(false)}>Home</Link>
                   
                   {user.role === 'admin' && (
                     <>
-                      <Link to="/admin-dashboard" className="nav-link">Dashboard</Link>
-                      <Link to="/admin-dashboard" className="nav-link">Bookings</Link>
-                      <Link to="/admin-dashboard" className="nav-link">Buses</Link>
-                      <Link to="/admin-dashboard" className="nav-link">Staff</Link>
+                      <Link to="/admin-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>Dashboard</Link>
+                      <Link to="/admin-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>Bookings</Link>
+                      <Link to="/admin-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>Buses</Link>
+                      <Link to="/admin-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>Staff</Link>
                     </>
                   )}
 
                   {user.role === 'counter_staff' && (
                     <>
-                      <Link to="/staff-dashboard" className="nav-link">Dashboard</Link>
-                      <Link to="/staff-dashboard" className="nav-link">New Booking</Link>
-                      <Link to="/staff-dashboard" className="nav-link">My Bookings</Link>
+                      <Link to="/staff-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>Dashboard</Link>
+                      <Link to="/staff-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>New Booking</Link>
+                      <Link to="/staff-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>My Bookings</Link>
                     </>
                   )}
 
                   {user.role === 'customer' && (
                     <>
-                      <Link to="/customer-dashboard" className="nav-link">Dashboard</Link>
-                      <Link to="/customer-dashboard" className="nav-link">My Trips</Link>
-                      <Link to="/routes" className="nav-link">Book Ticket</Link>
+                      <Link to="/customer-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>Dashboard</Link>
+                      <Link to="/customer-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>My Trips</Link>
+                      <Link to="/routes" className="nav-link" onClick={() => setMobileOpen(false)}>Book Ticket</Link>
                     </>
                   )}
 
@@ -164,7 +188,7 @@ const Header = () => {
                         {user.role === 'customer' && 'Customer'}
                       </span>
                     </div>
-                    <button className="logout-btn-header" onClick={handleLogout}>
+                    <button className="logout-btn-header" onClick={() => { setMobileOpen(false); handleLogout(); }}>
                       Logout
                     </button>
                   </div>

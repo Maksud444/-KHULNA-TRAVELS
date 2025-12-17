@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
+import { getBuses } from '../api';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const HomePage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isSearching, setIsSearching] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const [buses, setBuses] = useState(null);
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [ticketCount, setTicketCount] = useState(0);
   const [activeAnnouncement, setActiveAnnouncement] = useState(0);
@@ -157,6 +159,16 @@ const HomePage = () => {
       setShowNotification(true);
       setTimeout(() => setShowNotification(false), 3000);
     }, 1000);
+  }, []);
+
+  // Fetch example buses from backend API
+  useEffect(() => {
+    getBuses()
+      .then((data) => setBuses(data))
+      .catch((err) => {
+        console.error('Failed to load buses:', err);
+        setBuses([]);
+      });
   }, []);
 
   const formatDate = (date) => {
@@ -586,6 +598,7 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
 
       <section className="payment-section-pro">
         <div className="container">

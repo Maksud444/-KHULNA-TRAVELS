@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './PaymentPage.css';
+import paymentService from '../services/paymentService';
 
 const PaymentPage = () => {
   const navigate = useNavigate();
@@ -122,24 +123,102 @@ const PaymentPage = () => {
     setShowPaymentModal(true);
   };
 
-  const processPayment = () => {
+  const processPayment = async () => {
     setIsProcessing(true);
-    
-    setTimeout(() => {
+
+    try {
+      if (paymentMethod === 'bkash') {
+        const res = await paymentService.createBkashPayment({ amount: totalPrice, booking: bookingData });
+
+        // If gateway provides a checkout/redirect URL, go there
+        const redirect = res?.redirectUrl || res?.checkout_url || res?.payment_url;
+        const paymentId = res?.payment_id || res?.paymentId || res?.transaction_id;
+
+        if (redirect) {
+          // store pending payment id (if any) and redirect
+          if (paymentId) paymentService.setPendingPayment(paymentId);
+          window.location.href = redirect;
+          return;
+        }
+
+        // If we have a payment id, poll status
+        if (paymentId) {
+          paymentService.setPendingPayment(paymentId);
+          const start = Date.now();
+          let status = null;
+          while (Date.now() - start < 30000) {
+            // eslint-disable-next-line no-await-in-loop
+            const st = await paymentService.checkPaymentStatus(paymentId);
+            status = st?.status;
+            if (status === 'SUCCESS' || status === 'FAILED') break;
+            // eslint-disable-next-line no-await-in-loop
+            await new Promise(r => setTimeout(r, 2000));
+          }
+
+          paymentService.clearPendingPayment();
+
+          if (status === 'SUCCESS') {
+            navigate('/confirmation', { state: { ...bookingData, paymentMethod, totalPrice, bookingId: paymentId, paymentStatus: 'SUCCESS' } });
+            return;
+          }
+
+          alert('Payment_failed_or_timed_out');
+          return;
+        }
+
+        // otherwise fallthrough to error
+        throw new Error('Unexpected bKash response');
+      }
+
+      if (paymentMethod === 'sslcommerz') {
+        const res = await paymentService.initSSLCommerzPayment({ amount: totalPrice, booking: bookingData });
+        const redirect = res?.redirectUrl || res?.GatewayPageURL;
+        const paymentId = res?.tran_id || res?.payment_id || res?.paymentId;
+
+        if (redirect) {
+          if (paymentId) paymentService.setPendingPayment(paymentId);
+          window.location.href = redirect;
+          return;
+        }
+
+        if (paymentId) {
+          // Poll
+          paymentService.setPendingPayment(paymentId);
+          const start = Date.now();
+          let status = null;
+          while (Date.now() - start < 30000) {
+            // eslint-disable-next-line no-await-in-loop
+            const st = await paymentService.checkPaymentStatus(paymentId);
+            status = st?.status;
+            if (status === 'SUCCESS' || status === 'FAILED') break;
+            // eslint-disable-next-line no-await-in-loop
+            await new Promise(r => setTimeout(r, 2000));
+          }
+
+          paymentService.clearPendingPayment();
+
+          if (status === 'SUCCESS') {
+            navigate('/confirmation', { state: { ...bookingData, paymentMethod, totalPrice, bookingId: paymentId, paymentStatus: 'SUCCESS' } });
+            return;
+          }
+
+          alert('Payment_failed_or_timed_out');
+          return;
+        }
+
+        throw new Error('Unexpected SSLCommerz response');
+      }
+
+      // Fallback for other methods (simulated success)
+      navigate('/confirmation', { state: { ...bookingData, paymentMethod, totalPrice, bookingId: 'KT' + Date.now(), paymentStatus: 'SUCCESS' } });
+
+    } catch (err) {
+      console.error('Payment initiation failed', err);
+      alert('Payment initiation failed: ' + (err.message || err));
+    } finally {
       setIsProcessing(false);
       setShowPaymentModal(false);
-      
-      // Navigate to confirmation page
-      navigate('/confirmation', {
-        state: {
-          ...bookingData,
-          paymentMethod,
-          totalPrice,
-          bookingId: 'KT' + Date.now(),
-          paymentStatus: 'SUCCESS'
-        }
-      });
-    }, 3000);
+    }
   };
 
   return (

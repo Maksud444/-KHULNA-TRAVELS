@@ -146,6 +146,14 @@
   min-height: 700px;
 }
 
+/* Make hero smaller on mobile so content is visible immediately */
+@media (max-width: 768px) {
+  .hero-pro { min-height: 420px; }
+}
+@media (max-width: 576px) {
+  .hero-pro { min-height: 360px; }
+}
+
 /* Carousel Styles */
 .hero-carousel {
   position: absolute;
@@ -813,6 +821,7 @@
 
   .search-form-pro {
     padding: 25px;
+    margin-top: -40px; /* pull up search form so it's visible on small hero */
   }
 
   .live-stats {

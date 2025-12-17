@@ -64,6 +64,28 @@ npm start
 
 # 4. Open browser
 http://localhost:3000
+
+
+### Optional: Run the example backend
+```bash
+# in a new terminal
+cd server
+npm install
+npm start
+# then in another terminal (frontend dev server respects CRA proxy)
+npm start
+```
+Set `REACT_APP_API_URL=http://localhost:5000` to call the backend directly from the frontend if you prefer not to use the proxy.
+
+PHP backend notes:
+- Run your PHP API (e.g., `php -S localhost:8000 -t backend/`) and set `REACT_APP_API_URL=http://localhost:8000`.
+- Expose these endpoints from your PHP API (example paths in repo layout):
+  - `POST /api/bkash/create-payment.php` -> creates a bKash checkout and returns `{ payment_id, redirectUrl? }`
+  - `POST /api/bkash/execute-payment.php` -> executes/confirm a bKash payment (server-side)
+  - `POST /api/sslcommerz/init-payment.php` -> initializes SSLCommerz and returns `{ redirectUrl, tran_id? }`
+  - `GET /api/payment-status.php?transaction_id=...` -> returns `{ status: 'PENDING'|'SUCCESS'|'FAILED' }`
+- Keep provider secrets on the server only; do not send keys to the frontend.
+- Use HTTPS in production and verify gateway callbacks on the server.
 ```
 
 ---

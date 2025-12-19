@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
-import { getBuses } from '../api';
+import { api } from '../services/api';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -9,11 +9,16 @@ const HomePage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isSearching, setIsSearching] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  const [buses, setBuses] = useState(null);
   const [expandedFaq, setExpandedFaq] = useState(null);
   const [ticketCount, setTicketCount] = useState(0);
   const [activeAnnouncement, setActiveAnnouncement] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // API Data States
+  const [allFromLocations, setAllFromLocations] = useState([]);
+  const [routeMapping, setRouteMapping] = useState({});
+  const [loadingRoutes, setLoadingRoutes] = useState(true);
+  const [apiError, setApiError] = useState(null);
 
   // Hero Images
   const heroImages = [
@@ -22,73 +27,12 @@ const HomePage = () => {
     '/images/Khulnatravelsdual.png'
   ];
 
-  // All FROM locations (39 total)
-  const allFromLocations = [
-    'Kuakata', 'Alipur', 'Mohipur', 'Hajipur', 'Pakhimara', 'Kolapara',
-    'Amtoli', 'Sakaria', 'Potuakhali', 'Pagla', 'Senanibas', 'Bakergonj',
-    'Rupatoli', 'Barishal', 'Monihar', 'Jessore', 'Rupadia', 'Basundia',
-    'Noapara', 'Fultola', 'Afilgat', 'Garrison', 'Shiromony', 'Fulbari',
-    'Daulatpur', 'Notun Rasta', 'Abu Naser', 'Royel Mor', 'Sonadanga',
-    'Zero Point', 'Jabusa', 'Kudirbottola', 'Katakhali', 'Bagerhat',
-    'Pirojpur', 'Rajapur', 'Jhalokathi', 'Notullabad', 'Khulna'
-  ];
-
-  // Route mapping
-  const routeMapping = {
-    'Kuakata': ['Khulna', 'Noapara', 'Jessore'],
-    'Alipur': ['Khulna', 'Noapara', 'Jessore'],
-    'Mohipur': ['Khulna', 'Noapara', 'Jessore'],
-    'Hajipur': ['Khulna', 'Noapara', 'Jessore'],
-    'Pakhimara': ['Khulna', 'Noapara', 'Jessore'],
-    'Kolapara': ['Khulna', 'Noapara', 'Jessore'],
-    'Amtoli': ['Khulna', 'Noapara', 'Jessore'],
-    'Sakaria': ['Khulna', 'Noapara', 'Jessore'],
-    'Pagla': ['Khulna', 'Noapara', 'Jessore'],
-    'Senanibas': ['Khulna', 'Noapara', 'Jessore'],
-    'Potuakhali': ['Khulna', 'Noapara', 'Jessore', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Bakergonj': ['Khulna', 'Noapara', 'Jessore', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Rupatoli': ['Khulna', 'Noapara', 'Jessore', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Barishal': ['Khulna', 'Noapara', 'Jessore', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Monihar': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Jessore': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Rupadia': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Basundia': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Noapara': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Fultola': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Afilgat': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Garrison': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Shiromony': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Fulbari': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Daulatpur': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Notun Rasta': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Abu Naser': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Royel Mor': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Sonadanga': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Zero Point': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Jabusa': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Kudirbottola': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Katakhali': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Bagerhat': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Pirojpur': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Rajapur': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Khulna': ['Jhalokathi', 'Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Jhalokathi': ['Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata'],
-    'Notullabad': ['Barishal', 'Bakergonj', 'Potuakhali', 'Lebukhali', 'Amtoli', 'Kolapara', 'Mohipur', 'Alipur', 'Kuakata']
-  };
-
-  const getToLocations = (from) => {
-    if (!from) return [];
-    return routeMapping[from] || [];
-  };
-
   const [searchData, setSearchData] = useState({
     from: '',
     to: '',
     journeyDate: '',
     countType: 'All'
   });
-
-  const availableToLocations = getToLocations(searchData.from);
 
   const [showFromDropdown, setShowFromDropdown] = useState(false);
   const [showToDropdown, setShowToDropdown] = useState(false);
@@ -111,12 +55,124 @@ const HomePage = () => {
     }
   ];
 
+  // Load Routes from API with comprehensive error handling
+  useEffect(() => {
+    const loadRoutes = async () => {
+      try {
+        setLoadingRoutes(true);
+        setApiError(null);
+        
+        console.log('🔄 Loading routes from API...');
+        console.log('📡 URL:', 'https://backoffice.khulnatravels.net/api/v1/road');
+        
+        const response = await api.routes.getAll();
+        
+        console.log('✅ Raw API response:', response);
+        console.log('📊 Response type:', typeof response);
+        console.log('📊 Is Array?', Array.isArray(response));
+        
+        // Handle different response formats
+        let routes = [];
+        
+        if (Array.isArray(response)) {
+          // Format 1: Direct array
+          routes = response;
+          console.log('✅ Format: Direct array');
+        } else if (response && Array.isArray(response.data)) {
+          // Format 2: {data: [...]}
+          routes = response.data;
+          console.log('✅ Format: {data: [...]}');
+        } else if (response && Array.isArray(response.routes)) {
+          // Format 3: {routes: [...]}
+          routes = response.routes;
+          console.log('✅ Format: {routes: [...]}');
+        } else if (response && response.success && Array.isArray(response.data)) {
+          // Format 4: {success: true, data: [...]}
+          routes = response.data;
+          console.log('✅ Format: {success: true, data: [...]}');
+        } else {
+          console.error('❌ Unknown response format:', response);
+          throw new Error('Unknown API response format');
+        }
+        
+        console.log('✅ Extracted routes:', routes);
+        console.log('📊 Number of routes:', routes.length);
+        
+        if (!routes || routes.length === 0) {
+          throw new Error('No routes found');
+        }
+
+        // Build FROM locations list
+        const fromLocs = [...new Set(routes.map(route => route.from || route.from_location))];
+        console.log('📍 FROM locations:', fromLocs);
+        setAllFromLocations(fromLocs.sort());
+
+        // Build route mapping
+        const mapping = {};
+        routes.forEach(route => {
+          const from = route.from || route.from_location;
+          const to = route.to || route.to_location;
+          
+          if (!from || !to) {
+            console.warn('⚠️ Invalid route:', route);
+            return;
+          }
+          
+          if (!mapping[from]) {
+            mapping[from] = [];
+          }
+          if (!mapping[from].includes(to)) {
+            mapping[from].push(to);
+          }
+        });
+
+        console.log('🗺️ Route mapping:', mapping);
+        setRouteMapping(mapping);
+        
+        console.log('✅ Routes loaded successfully!');
+        console.log('✅ Total FROM cities:', Object.keys(mapping).length);
+      } catch (error) {
+        console.error('❌ Load Error:', error);
+        console.error('❌ Error message:', error.message);
+        
+        setApiError(error.message);
+        
+        // Fallback data
+        console.log('⚠️ Using fallback data');
+        const fallback = {
+          'Kuakata': ['Khulna', 'Noapara', 'Jessore'],
+          'Khulna': ['Kuakata', 'Barishal', 'Patuakhali', 'Jhalokathi'],
+          'Jessore': ['Kuakata', 'Barishal', 'Jhalokathi'],
+          'Noapara': ['Kuakata', 'Barishal', 'Jhalokathi'],
+          'Barishal': ['Khulna', 'Kuakata'],
+          'Patuakhali': ['Khulna', 'Kuakata'],
+          'Bagerhat': ['Kuakata', 'Jhalokathi', 'Barishal'],
+          'Pirojpur': ['Kuakata', 'Barishal', 'Jhalokathi'],
+          'Jhalokathi': ['Kuakata', 'Barishal']
+        };
+        
+        setAllFromLocations(Object.keys(fallback).sort());
+        setRouteMapping(fallback);
+      } finally {
+        setLoadingRoutes(false);
+      }
+    };
+
+    loadRoutes();
+  }, []);
+
+  const getToLocations = (from) => {
+    if (!from) return [];
+    return routeMapping[from] || [];
+  };
+
+  const availableToLocations = getToLocations(searchData.from);
+
   // Auto slide images
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroImages.length);
-    }, 5000); // Change image every 5 seconds
-
+    }, 5000);
     return () => clearInterval(slideInterval);
   }, []);
 
@@ -159,16 +215,6 @@ const HomePage = () => {
       setShowNotification(true);
       setTimeout(() => setShowNotification(false), 3000);
     }, 1000);
-  }, []);
-
-  // Fetch example buses from backend API
-  useEffect(() => {
-    getBuses()
-      .then((data) => setBuses(data))
-      .catch((err) => {
-        console.error('Failed to load buses:', err);
-        setBuses([]);
-      });
   }, []);
 
   const formatDate = (date) => {
@@ -271,7 +317,7 @@ const HomePage = () => {
     },
     {
       question: 'টিকিটের মূল্য কত?',
-      answer: 'টিকিটের মূল্য রুট এবং বাসের ধরন অনুযায়ী ভিন্ন হয়। সাধারণত ৮৭০ টাকা থেকে ১৮০০ টাকা পর্যন্ত।'
+      answer: 'টিকিটের মূল্য রুট এবং বাসের ধরন অনুযায়ী ভিন্ন হয়। সাধারণত ১৫০ টাকা থেকে ৯৫০ টাকা পর্যন্ত।'
     },
     {
       question: 'বোর্ডিং পয়েন্ট কোথায়?',
@@ -287,7 +333,7 @@ const HomePage = () => {
     },
     {
       question: 'বাসে কি সুবিধা পাওয়া যায়?',
-      answer: 'আমাদের AC বাসে রয়েছে আরামদায়ক সিট, ওয়াইফাই, চার্জিং পয়েন্ট, টিভি, স্ন্যাকস এবং পানি।'
+      answer: 'আমাদের বাসে রয়েছে আরামদায়ক সিট, চার্জিং পয়েন্ট, পানি এবং নিরাপদ যাত্রা।'
     }
   ];
 
@@ -339,7 +385,6 @@ const HomePage = () => {
       </div>
 
       <section className="hero-pro">
-        {/* Image Carousel */}
         <div className="hero-carousel">
           <div className="carousel-container">
             {heroImages.map((image, index) => (
@@ -353,15 +398,9 @@ const HomePage = () => {
             ))}
           </div>
 
-          {/* Navigation Arrows */}
-          <button className="carousel-arrow prev" onClick={prevSlide}>
-            ‹
-          </button>
-          <button className="carousel-arrow next" onClick={nextSlide}>
-            ›
-          </button>
+          <button className="carousel-arrow prev" onClick={prevSlide}>‹</button>
+          <button className="carousel-arrow next" onClick={nextSlide}>›</button>
 
-          {/* Dots */}
           <div className="carousel-dots">
             {heroImages.map((_, index) => (
               <span
@@ -373,15 +412,10 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* Content Over Carousel */}
         <div className="container">
           <div className="hero-content-pro">
-            <h1 className="hero-title">
-              অনলাইন টিকেটিং সহজ হয়েছে!
-            </h1>
-            <p className="hero-subtitle">
-              দেশের যেকোনো প্রান্ত থেকে সহজেই বুক করুন আপনার বাস টিকেট
-            </p>
+            <h1 className="hero-title">অনলাইন টিকেটিং সহজ হয়েছে!</h1>
+            <p className="hero-subtitle">দেশের যেকোনো প্রান্ত থেকে সহজেই বুক করুন আপনার বাস টিকেট</p>
 
             <div className="live-stats">
               <div className="stat-card">
@@ -398,124 +432,145 @@ const HomePage = () => {
               </div>
             </div>
 
-            <form className="search-form-pro" onSubmit={handleSearch}>
-              <div className="form-grid">
-                <div className="form-field">
-                  <label>কোথা থেকে</label>
-                  <div className="dropdown-wrapper">
+            {loadingRoutes ? (
+              <div className="loading-routes" style={{
+                padding: '40px',
+                textAlign: 'center',
+                background: 'rgba(255,255,255,0.9)',
+                borderRadius: '10px',
+                marginTop: '30px'
+              }}>
+                <div style={{
+                  display: 'inline-block',
+                  width: '40px',
+                  height: '40px',
+                  border: '4px solid #f3f3f3',
+                  borderTop: '4px solid #03256c',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite'
+                }}></div>
+                <p style={{marginTop: '20px', fontSize: '16px', color: '#03256c'}}>
+                  রুট লোড হচ্ছে...
+                </p>
+              </div>
+            ) : (
+              <form className="search-form-pro" onSubmit={handleSearch}>
+                <div className="form-grid">
+                  <div className="form-field">
+                    <label>কোথা থেকে</label>
+                    <div className="dropdown-wrapper">
+                      <input
+                        type="text"
+                        placeholder="শুরুর স্থান"
+                        value={searchData.from}
+                        onFocus={() => setShowFromDropdown(true)}
+                        onBlur={() => setTimeout(() => setShowFromDropdown(false), 200)}
+                        onChange={(e) => setSearchData({ ...searchData, from: e.target.value, to: '' })}
+                        required
+                      />
+                      {showFromDropdown && (
+                        <div className="dropdown-menu">
+                          {allFromLocations
+                            .filter(loc => loc.toLowerCase().includes(searchData.from.toLowerCase()))
+                            .map((location, idx) => (
+                              <div
+                                key={idx}
+                                className="dropdown-item"
+                                onClick={() => handleFromSelect(location)}
+                              >
+                                <span className="location-icon">📍</span>
+                                {location}
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="swap-button-wrapper">
+                    <button
+                      type="button"
+                      className="swap-btn-pro"
+                      onClick={swapLocations}
+                      title="স্থান পরিবর্তন করুন"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2"/>
+                        <path d="M17 14L12 9L7 14" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="form-field">
+                    <label>কোথায়</label>
+                    <div className="dropdown-wrapper">
+                      <input
+                        type="text"
+                        placeholder={searchData.from ? "গন্তব্য নির্বাচন করুন" : "প্রথমে শুরুর স্থান নির্বাচন করুন"}
+                        value={searchData.to}
+                        onFocus={() => searchData.from && setShowToDropdown(true)}
+                        onBlur={() => setTimeout(() => setShowToDropdown(false), 200)}
+                        onChange={(e) => setSearchData({ ...searchData, to: e.target.value })}
+                        disabled={!searchData.from}
+                        required
+                      />
+                      {showToDropdown && searchData.from && (
+                        <div className="dropdown-menu">
+                          {availableToLocations.length > 0 ? (
+                            availableToLocations
+                              .filter(loc => loc.toLowerCase().includes(searchData.to.toLowerCase()))
+                              .map((location, idx) => (
+                                <div
+                                  key={idx}
+                                  className="dropdown-item"
+                                  onClick={() => handleToSelect(location)}
+                                >
+                                  <span className="location-icon">📍</span>
+                                  {location}
+                                </div>
+                              ))
+                          ) : (
+                            <div className="dropdown-item disabled">
+                              <span className="location-icon">❌</span>
+                              কোন রুট উপলব্ধ নেই
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="form-field">
+                    <label>যাত্রার তারিখ</label>
                     <input
-                      type="text"
-                      placeholder="শুরুর স্থান"
-                      value={searchData.from}
-                      onFocus={() => setShowFromDropdown(true)}
-                      onBlur={() => setTimeout(() => setShowFromDropdown(false), 200)}
-                      onChange={(e) => setSearchData({ ...searchData, from: e.target.value, to: '' })}
+                      type="date"
+                      value={searchData.journeyDate}
+                      onChange={(e) => setSearchData({ ...searchData, journeyDate: e.target.value })}
+                      min={new Date().toISOString().split('T')[0]}
                       required
                     />
-                    {showFromDropdown && (
-                      <div className="dropdown-menu">
-                        {allFromLocations.filter(loc => 
-                          loc.toLowerCase().includes(searchData.from.toLowerCase())
-                        ).map((location, idx) => (
-                          <div
-                            key={idx}
-                            className="dropdown-item"
-                            onClick={() => handleFromSelect(location)}
-                          >
-                            <span className="location-icon">📍</span>
-                            {location}
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
-                </div>
 
-                <div className="swap-button-wrapper">
                   <button
-                    type="button"
-                    className="swap-btn-pro"
-                    onClick={swapLocations}
-                    title="স্থান পরিবর্তন করুন"
+                    type="submit"
+                    className="search-btn-pro"
+                    disabled={isSearching}
                   >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M17 14L12 9L7 14" stroke="currentColor" strokeWidth="2"/>
-                    </svg>
+                    {isSearching ? (
+                      <>
+                        <span className="spinner"></span>
+                        খুঁজছি...
+                      </>
+                    ) : (
+                      <>
+                        <span className="icon">🔍</span>
+                        বাস খুঁজুন
+                      </>
+                    )}
                   </button>
                 </div>
-
-                <div className="form-field">
-                  <label>কোথায়</label>
-                  <div className="dropdown-wrapper">
-                    <input
-                      type="text"
-                      placeholder={searchData.from ? "গন্তব্য নির্বাচন করুন" : "প্রথমে শুরুর স্থান নির্বাচন করুন"}
-                      value={searchData.to}
-                      onFocus={() => searchData.from && setShowToDropdown(true)}
-                      onBlur={() => setTimeout(() => setShowToDropdown(false), 200)}
-                      onChange={(e) => setSearchData({ ...searchData, to: e.target.value })}
-                      disabled={!searchData.from}
-                      required
-                    />
-                    {showToDropdown && searchData.from && (
-                      <div className="dropdown-menu">
-                        {availableToLocations.length > 0 ? (
-                          availableToLocations.filter(loc => 
-                            loc.toLowerCase().includes(searchData.to.toLowerCase())
-                          ).map((location, idx) => (
-                            <div
-                              key={idx}
-                              className="dropdown-item"
-                              onClick={() => handleToSelect(location)}
-                            >
-                              <span className="location-icon">📍</span>
-                              {location}
-                            </div>
-                          ))
-                        ) : (
-                          <div className="dropdown-item disabled">
-                            <span className="location-icon">❌</span>
-                            কোন রুট উপলব্ধ নেই
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="form-field">
-                  <label>যাত্রার তারিখ</label>
-                  <input
-                    type="date"
-                    value={searchData.journeyDate}
-                    onChange={(e) => setSearchData({ ...searchData, journeyDate: e.target.value })}
-                    min={new Date().toISOString().split('T')[0]}
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="search-btn-pro"
-                  disabled={isSearching}
-                >
-                  {isSearching ? (
-                    <>
-                      <span className="spinner"></span>
-                      খুঁজছি...
-                    </>
-                  ) : (
-                    <>
-                      <span className="icon">🔍</span>
-                      বাস খুঁজুন
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-
-           
+              </form>
+            )}
           </div>
         </div>
       </section>
@@ -590,15 +645,12 @@ const HomePage = () => {
                     <span>{route.buses} বাস</span>
                   </div>
                 </div>
-                <button className="route-book-btn">
-                  এখনই বুক করুন
-                </button>
+                <button className="route-book-btn">এখনই বুক করুন</button>
               </div>
             ))}
           </div>
         </div>
       </section>
-
 
       <section className="payment-section-pro">
         <div className="container">
@@ -635,9 +687,7 @@ const HomePage = () => {
                   <span className="faq-icon">{expandedFaq === idx ? '−' : '+'}</span>
                 </div>
                 {expandedFaq === idx && (
-                  <div className="faq-answer-pro">
-                    {item.answer}
-                  </div>
+                  <div className="faq-answer-pro">{item.answer}</div>
                 )}
               </div>
             ))}

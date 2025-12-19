@@ -1,7 +1,7 @@
 {
   "schedules": {
     "morning": {
-      "name": "Morning Schedule (Kuakata → Khulna/Noapara/Jessore)",
+      "name": "Morning/Night Schedule (Kuakata → Khulna/Noapara/Jessore)",
       "route": "Kuakata to Khulna Region",
       "stops": [
         { "location": "Kuakata", "type": "Boarding", "time": "07:30 PM" },
@@ -20,11 +20,31 @@
         { "location": "Barishal", "type": "Boarding", "time": "10:55 PM" },
         { "location": "Noapara", "type": "Dropping", "time": "12:25 AM" },
         { "location": "Khulna", "type": "Dropping", "time": "12:55 AM" },
-        { "location": "Jessore", "type": "Dropping", "time": "01:55 AM" }
+        { "location": "Jessore", "type": "Dropping", "time": "01:55 AM" },
+
+
+
+         { "location": "Kuakata", "type": "Boarding", "time": "07:30 AM" },
+        { "location": "Alipur", "type": "Boarding", "time": "07:45 AM" },
+        { "location": "Mohipur", "type": "Boarding", "time": "07:50 AM" },
+        { "location": "Hajipur", "type": "Boarding", "time": "07:55 AM" },
+        { "location": "Pakhimara", "type": "Boarding", "time": "08:15 AM" },
+        { "location": "Kolapara", "type": "Boarding", "time": "08:30 AM" },
+        { "location": "Amtoli", "type": "Boarding", "time": "09:00 AM" },
+        { "location": "Sakaria", "type": "Boarding", "time": "09:15 AM" },
+        { "location": "Potuakhali", "type": "Boarding", "time": "09:30 AM" },
+        { "location": "Pagla", "type": "Boarding", "time": "09:35 AM" },
+        { "location": "Senanibas", "type": "Boarding", "time": "10:00 AM" },
+        { "location": "Bakergonj", "type": "Boarding", "time": "10:30 AM" },
+        { "location": "Rupatoli", "type": "Boarding", "time": "10:35 AM" },
+        { "location": "Barishal", "type": "Boarding", "time": "10:55 AM" },
+        { "location": "Noapara", "type": "Dropping", "time": "12:25 PM" },
+        { "location": "Khulna", "type": "Dropping", "time": "12:55 PM" },
+        { "location": "Jessore", "type": "Dropping", "time": "01:55 PM" }
       ]
     },
     "night": {
-      "name": "Night Schedule (Khulna → Kuakata)",
+      "name": "Night/Day Schedule (Khulna → Kuakata)",
       "route": "Khulna Region to Kuakata",
       "stops": [
         { "location": "Monihar", "type": "Boarding", "time": "06:30 PM" },
@@ -60,7 +80,43 @@
         { "location": "Kolapara", "type": "Dropping", "time": "03:05 AM" },
         { "location": "Mohipur", "type": "Dropping", "time": "03:20 AM" },
         { "location": "Alipur", "type": "Dropping", "time": "03:35 AM" },
-        { "location": "Kuakata", "type": "Dropping", "time": "03:50 AM" }
+        { "location": "Kuakata", "type": "Dropping", "time": "03:50 AM" },
+
+        { "location": "Monihar", "type": "Boarding", "time": "06:30 AM" },
+        { "location": "Jessore", "type": "Boarding", "time": "07:00 AM" },
+        { "location": "Rupadia", "type": "Boarding", "time": "07:30 AM" },
+        { "location": "Basundia", "type": "Boarding", "time": "08:00 AM" },
+        { "location": "Noapara", "type": "Boarding", "time": "08:30 AM" },
+        { "location": "Fultola", "type": "Boarding", "time": "08:45 AM" },
+        { "location": "Afilgat", "type": "Boarding", "time": "08:55 AM" },
+        { "location": "Garrison", "type": "Boarding", "time": "09:05 AM" },
+        { "location": "Shiromony", "type": "Boarding", "time": "09:10 AM" },
+        { "location": "Fulbari", "type": "Boarding", "time": "09:20 AM" },
+        { "location": "Daulatpur", "type": "Boarding", "time": "09:30 AM" },
+        { "location": "Notun Rasta", "type": "Boarding", "time": "09:35 AM" },
+        { "location": "Abu Naser", "type": "Boarding", "time": "09:40 AM" },
+        { "location": "Royel Mor", "type": "Boarding", "time": "09:50 AM" },
+        { "location": "Sonadanga", "type": "Boarding", "time": "10:00 AM" },
+        { "location": "Zero Point", "type": "Boarding", "time": "10:10 AM" },
+        { "location": "Jabusa", "type": "Boarding", "time": "10:15 AM" },
+        { "location": "Kudirbottola", "type": "Boarding", "time": "10:20 AM" },
+        { "location": "Katakhali", "type": "Boarding", "time": "10:30 AM" },
+        { "location": "Bagerhat", "type": "Boarding", "time": "11:00 AM" },
+        { "location": "Pirojpur", "type": "Boarding", "time": "12:00 PM" },
+        { "location": "Rajapur", "type": "Boarding", "time": "12:15 PM" },
+        { "location": "Jhalokathi", "type": "Boarding+Dropping", "time": "12:30 PM" },
+        { "location": "Barishal", "type": "Boarding+Dropping", "time": "01:00 PM" },
+        { "location": "Rupatoli", "type": "Boarding", "time": "01:35 PM" },
+        { "location": "Notullabad", "type": "Boarding", "time": "01:50 PM" },
+        { "location": "Bakergonj", "type": "Boarding+Dropping", "time": "02:05 PM" },
+        { "location": "Potuakhali", "type": "Boarding+Dropping", "time": "02:20 PM" },
+        { "location": "Lebukhali", "type": "Dropping", "time": "02:35 PM" },
+        { "location": "Amtoli", "type": "Dropping", "time": "02:50 PM" },
+        { "location": "Kolapara", "type": "Dropping", "time": "03:05 PM" },
+        { "location": "Mohipur", "type": "Dropping", "time": "03:20 PM" },
+        { "location": "Alipur", "type": "Dropping", "time": "03:35 PM" },
+        { "location": "Kuakata", "type": "Dropping", "time": "03:50 PM" }
+
       ]
     }
   },

@@ -1,4 +1,4 @@
-const API_BASE = process.env.REACT_APP_API_URL || '';
+const API_BASE = process.env.REACT_APP_API_URL || '/api/v1';
 
 export async function getBuses() {
   const res = await fetch(`${API_BASE}/api/buses`);

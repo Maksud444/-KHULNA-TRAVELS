@@ -1,17 +1,16 @@
-/* Header - Khulna Travels */
+/* Header.css - Updated for new Login/Register components */
 
 .header {
-  background: #03256c;
-  color: white;
-  padding: 15px 0;
+  background: linear-gradient(135deg, #03256c 0%, #0652DD 100%);
+  padding: 0;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(3, 37, 108, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -20,110 +19,89 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 70px;
 }
 
 /* Logo */
 .logo {
   text-decoration: none;
   color: white;
+  transition: opacity 0.3s ease;
+}
+
+.logo:hover {
+  opacity: 0.9;
 }
 
 .logo h1 {
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 700;
   margin: 0;
   letter-spacing: 1px;
 }
 
-/* Navigation */
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-/* Mobile Toggle (hidden on desktop) */
+/* Mobile Toggle Button */
 .mobile-toggle {
   display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
   background: transparent;
   border: none;
-  width: 44px;
-  height: 44px;
-  padding: 6px;
-  border-radius: 8px;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
+  padding: 0;
+  z-index: 1001;
 }
 
-.mobile-toggle .hamburger-line {
-  display: block;
-  width: 22px;
-  height: 2px;
+.hamburger-line {
+  width: 100%;
+  height: 3px;
   background: white;
-  margin: 4px 0;
-  transition: transform 0.25s ease, opacity 0.25s ease;
+  border-radius: 10px;
+  transition: all 0.3s ease;
 }
 
 .mobile-toggle.open .hamburger-line:nth-child(1) {
-  transform: translateY(6px) rotate(45deg);
+  transform: rotate(45deg) translate(7px, 7px);
 }
+
 .mobile-toggle.open .hamburger-line:nth-child(2) {
   opacity: 0;
 }
+
 .mobile-toggle.open .hamburger-line:nth-child(3) {
-  transform: translateY(-6px) rotate(-45deg);
+  transform: rotate(-45deg) translate(7px, -7px);
 }
 
-/* Mobile nav open styles */
-.nav-menu.nav-open {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
+/* Navigation Menu */
+.nav-menu {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 20px;
-  background: rgba(3, 37, 108, 0.98);
-  z-index: 1500;
-  padding: 80px 20px;
-}
-
-.nav-menu.nav-open .nav-link {
-  font-size: 20px;
-  padding: 12px 20px;
-}
-
-.nav-menu.nav-open .auth-btn {
-  width: 80%;
-  padding: 12px 18px;
-  font-size: 16px;
+  gap: 25px;
 }
 
 .nav-link {
   color: white;
   text-decoration: none;
+  font-weight: 500;
   font-size: 15px;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 6px;
   transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 5px;
 }
 
 .nav-link:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Auth Buttons (Guest) */
+/* Auth Buttons */
 .auth-btn {
+  padding: 10px 25px;
   border: none;
-  padding: 10px 24px;
-  border-radius: 8px;
+  border-radius: 25px;
+  font-weight: 600;
   font-size: 14px;
-  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -140,60 +118,60 @@
 }
 
 .register-btn {
-  background: #2cb67d;
-  color: white;
+  background: white;
+  color: #03256c;
 }
 
 .register-btn:hover {
-  background: #27a56f;
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
 }
 
-/* User Menu (Logged In) */
+/* User Menu */
 .user-menu {
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 8px 16px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  padding: 8px 15px;
+  border-radius: 25px;
 }
 
 .user-info {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .user-name {
+  color: white;
+  font-weight: 600;
   font-size: 14px;
-  font-weight: 700;
 }
 
 .user-role {
-  font-size: 11px;
-  opacity: 0.8;
-  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
 }
 
 .logout-btn-header {
-  background: #d63031;
+  background: rgba(255, 255, 255, 0.2);
   color: white;
   border: none;
   padding: 8px 20px;
-  border-radius: 6px;
+  border-radius: 20px;
+  font-weight: 600;
   font-size: 13px;
-  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .logout-btn-header:hover {
-  background: #c0281f;
-  transform: translateY(-2px);
+  background: white;
+  color: #03256c;
 }
 
-/* Auth Modal */
+/* Auth Modal Overlay */
 .auth-modal-overlay {
   position: fixed;
   top: 0;
@@ -205,266 +183,284 @@
   align-items: center;
   justify-content: center;
   z-index: 2000;
+  padding: 20px;
   animation: fadeIn 0.3s ease;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.auth-modal {
+/* Auth Modal Wrapper */
+.auth-modal-wrapper {
   background: white;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 450px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
   animation: slideUp 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes slideUp {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(30px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.modal-close {
+/* Close Button */
+.modal-close-btn {
   position: absolute;
   top: 15px;
   right: 15px;
-  background: #f0f0f0;
+  background: transparent;
   border: none;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  font-size: 20px;
+  font-size: 28px;
+  color: #666;
   cursor: pointer;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
   transition: all 0.3s ease;
-  color: #636e72;
-  font-weight: 700;
+  z-index: 10;
 }
 
-.modal-close:hover {
-  background: #d63031;
-  color: white;
+.modal-close-btn:hover {
+  background: #f0f0f0;
+  color: #333;
   transform: rotate(90deg);
 }
 
-.modal-header {
-  background: #03256c;
-  color: white;
-  padding: 30px;
-  border-radius: 16px 16px 0 0;
-  text-align: center;
-}
-
-.modal-header h2 {
-  font-size: 28px;
-  font-weight: 900;
-  margin: 0 0 8px;
-}
-
-.modal-header p {
-  font-size: 14px;
-  opacity: 0.9;
-  margin: 0;
-}
-
-.modal-body {
-  padding: 30px;
-}
-
-/* Error Message */
-.error-message {
-  background: #ffe8e8;
-  color: #d63031;
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  text-align: center;
-  border: 2px solid #d63031;
-}
-
-/* Form */
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  font-size: 14px;
-  font-weight: 700;
-  color: #2d3436;
-  margin-bottom: 8px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #dfe6e9;
-  border-radius: 8px;
-  font-size: 14px;
-  color: #2d3436;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #03256c;
-  box-shadow: 0 0 0 4px rgba(3, 37, 108, 0.1);
-}
-
-.submit-btn {
-  width: 100%;
-  background: #2cb67d;
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 10px;
-}
-
-.submit-btn:hover:not(:disabled) {
-  background: #27a56f;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(44, 182, 125, 0.3);
-}
-
-.submit-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Modal Footer */
-.modal-footer {
-  text-align: center;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 2px solid #f0f0f0;
-}
-
-.modal-footer p {
-  font-size: 14px;
-  color: #636e72;
-  margin: 0;
-}
-
-.switch-mode-btn {
-  background: none;
-  border: none;
-  color: #03256c;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.switch-mode-btn:hover {
-  color: #2cb67d;
-}
-
-/* Test Credentials */
-.test-credentials {
+/* Auth Tabs */
+.auth-modal-tabs {
+  display: flex;
+  border-bottom: 2px solid #e0e0e0;
+  padding: 0 30px;
   background: #f8f9fa;
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 20px;
+  border-radius: 15px 15px 0 0;
 }
 
-.test-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #636e72;
-  margin: 0 0 15px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.auth-tab {
+  flex: 1;
+  padding: 15px 20px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-.test-users {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.test-user {
-  font-size: 12px;
-  color: #2d3436;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.test-user strong {
+.auth-tab:hover {
   color: #03256c;
-  font-weight: 700;
 }
 
-.test-user span {
-  font-family: monospace;
-  background: white;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #dfe6e9;
+.auth-tab.active {
+  color: #03256c;
 }
 
-/* Responsive */
+.auth-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #03256c;
+  border-radius: 3px 3px 0 0;
+}
+
+/* Auth Modal Content */
+.auth-modal-content {
+  padding: 0;
+}
+
+/* Override Login/Register component styles to fit in modal */
+.auth-modal-content .login-container,
+.auth-modal-content .register-container {
+  min-height: auto;
+  background: transparent;
+  padding: 0;
+}
+
+.auth-modal-content .login-form,
+.auth-modal-content .register-form {
+  box-shadow: none;
+  border-radius: 0;
+  max-width: 100%;
+  padding: 30px;
+  max-height: none;
+}
+
+.auth-modal-content .login-title,
+.auth-modal-content .register-title {
+  margin-top: 0;
+  font-size: 24px;
+}
+
+/* Scrollbar for modal */
+.auth-modal-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.auth-modal-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.auth-modal-wrapper::-webkit-scrollbar-thumb {
+  background: #0652DD;
+  border-radius: 10px;
+}
+
+.auth-modal-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #03256c;
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
-  .header-content {
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
+  .mobile-toggle {
+    display: flex;
   }
 
-  /* Show the mobile toggle and hide inline nav by default */
-  .mobile-toggle { display: flex; }
-  .nav-menu { display: none; }
+  .nav-menu {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #03256c 0%, #0652DD 100%);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0;
+    padding: 20px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+  }
+
+  .nav-menu.nav-open {
+    transform: translateX(0);
+  }
 
   .nav-link {
+    padding: 15px 20px;
+    border-radius: 8px;
+    text-align: left;
     font-size: 16px;
-    padding: 12px 18px;
   }
 
   .auth-btn {
-    padding: 10px 20px;
-    font-size: 15px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .login-btn {
+    margin-top: 20px;
   }
 
   .user-menu {
     flex-direction: column;
-    padding: 10px;
-    gap: 10px;
+    align-items: stretch;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
   }
 
   .user-info {
     align-items: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 10px;
   }
 
-  .auth-modal {
-    width: 95%;
-    margin: 20px;
+  .user-name {
+    font-size: 16px;
   }
 
-  .modal-body {
+  .user-role {
+    font-size: 13px;
+  }
+
+  .logout-btn-header {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .auth-modal-wrapper {
+    max-width: 95%;
+    max-height: 85vh;
+  }
+
+  .auth-modal-tabs {
+    padding: 0 15px;
+  }
+
+  .auth-tab {
+    padding: 12px 15px;
+    font-size: 14px;
+  }
+
+  .auth-modal-content .login-form,
+  .auth-modal-content .register-form {
     padding: 20px;
   }
 
   .logo h1 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content {
+    min-height: 60px;
+  }
+
+  .logo h1 {
+    font-size: 18px;
+  }
+
+  .auth-modal-wrapper {
+    border-radius: 10px;
+  }
+
+  .modal-close-btn {
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    width: 35px;
+    height: 35px;
+  }
+
+  .auth-modal-content .login-form,
+  .auth-modal-content .register-form {
+    padding: 15px;
+  }
+
+  .auth-modal-content .login-title,
+  .auth-modal-content .register-title {
     font-size: 20px;
   }
 }

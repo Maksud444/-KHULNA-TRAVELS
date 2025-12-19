@@ -1,21 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import Login from './Auth/Login';
+import Register from './Auth/Register';
 import './Header.css';
 
 const Header = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, login: performLogin, logout } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState('login');
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    phone: ''
-  });
-  const [error, setError] = useState('');
-  const [loadingForm, setLoadingForm] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  
   // Mobile menu toggle
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -27,53 +22,85 @@ const Header = () => {
       document.body.style.overflow = '';
     }
 
-    return () => { document.body.style.overflow = ''; };
+    return () => { 
+      document.body.style.overflow = ''; 
+    };
   }, [mobileOpen]);
+
+  // Lock body scroll when auth modal open
+  React.useEffect(() => {
+    if (showAuthModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => { 
+      document.body.style.overflow = ''; 
+    };
+  }, [showAuthModal]);
 
   const handleLogout = () => {
     logout();
     navigate('/');
+    setMobileOpen(false);
   };
 
   const handleAuthModalOpen = (mode) => {
     setAuthMode(mode);
     setShowAuthModal(true);
-    setError('');
-    setFormData({ email: '', password: '', name: '', phone: '' });
+    setMobileOpen(false); // Close mobile menu
   };
 
   const handleAuthModalClose = () => {
     setShowAuthModal(false);
-    setError('');
-    setFormData({ email: '', password: '', name: '', phone: '' });
   };
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleLoginSuccess = async (userData) => {
+    console.log('Login successful in Header:', userData);
+    
+    // Update auth context
+    await performLogin(userData.email, 'already-authenticated');
+    
+    // Close modal
+    handleAuthModalClose();
+    
+    // Navigate based on role
+    switch (userData.role) {
+      case 'admin':
+        navigate('/admin-dashboard');
+        break;
+      case 'staff':
+      case 'counter_staff':
+        navigate('/staff-dashboard');
+        break;
+      case 'user':
+      case 'customer':
+        navigate('/customer-dashboard');
+        break;
+      default:
+        navigate('/');
+    }
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoadingForm(true);
-
-    const result = await performLogin(formData.email, formData.password);
-
-    setLoadingForm(false);
-
-    if (result.success) {
+  const handleRegisterSuccess = async (userData) => {
+    console.log('Register successful in Header:', userData);
+    
+    // If registration returns token, log user in automatically
+    if (userData && userData.email) {
+      await performLogin(userData.email, 'already-authenticated');
       handleAuthModalClose();
       
-      switch (result.role) {
+      // Navigate to appropriate dashboard
+      switch (userData.role) {
         case 'admin':
           navigate('/admin-dashboard');
           break;
+        case 'staff':
         case 'counter_staff':
           navigate('/staff-dashboard');
           break;
+        case 'user':
         case 'customer':
           navigate('/customer-dashboard');
           break;
@@ -81,33 +108,18 @@ const Header = () => {
           navigate('/');
       }
     } else {
-      setError(result.message);
+      // If no auto-login, switch to login form
+      alert('Registration successful! Please login with your credentials.');
+      setAuthMode('login');
     }
   };
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoadingForm(true);
+  const handleSwitchToRegister = () => {
+    setAuthMode('register');
+  };
 
-    if (!formData.name || !formData.email || !formData.phone || !formData.password) {
-      setError('সব ফিল্ড পূরণ করুন');
-      setLoadingForm(false);
-      return;
-    }
-
-    if (formData.phone.length !== 11) {
-      setError('সঠিক মোবাইল নম্বর দিন (১১ ডিজিট)');
-      setLoadingForm(false);
-      return;
-    }
-
-    setTimeout(() => {
-      setLoadingForm(false);
-      alert('Registration successful! Please login.');
-      setAuthMode('login');
-      setFormData({ email: '', password: '', name: '', phone: '' });
-    }, 1000);
+  const handleSwitchToLogin = () => {
+    setAuthMode('login');
   };
 
   return (
@@ -139,13 +151,13 @@ const Header = () => {
                   <Link to="/contact" className="nav-link" onClick={() => setMobileOpen(false)}>Contact</Link>
                   <button 
                     className="auth-btn login-btn"
-                    onClick={() => { setMobileOpen(false); handleAuthModalOpen('login'); }}
+                    onClick={() => handleAuthModalOpen('login')}
                   >
                     Login
                   </button>
                   <button 
                     className="auth-btn register-btn"
-                    onClick={() => { setMobileOpen(false); handleAuthModalOpen('register'); }}
+                    onClick={() => handleAuthModalOpen('register')}
                   >
                     Register
                   </button>
@@ -163,7 +175,7 @@ const Header = () => {
                     </>
                   )}
 
-                  {user.role === 'counter_staff' && (
+                  {(user.role === 'counter_staff' || user.role === 'staff') && (
                     <>
                       <Link to="/staff-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>Dashboard</Link>
                       <Link to="/staff-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>New Booking</Link>
@@ -171,7 +183,7 @@ const Header = () => {
                     </>
                   )}
 
-                  {user.role === 'customer' && (
+                  {(user.role === 'customer' || user.role === 'user') && (
                     <>
                       <Link to="/customer-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>Dashboard</Link>
                       <Link to="/customer-dashboard" className="nav-link" onClick={() => setMobileOpen(false)}>My Trips</Link>
@@ -184,11 +196,11 @@ const Header = () => {
                       <span className="user-name">{user.name}</span>
                       <span className="user-role">
                         {user.role === 'admin' && 'Admin'}
-                        {user.role === 'counter_staff' && 'Staff'}
-                        {user.role === 'customer' && 'Customer'}
+                        {(user.role === 'counter_staff' || user.role === 'staff') && 'Staff'}
+                        {(user.role === 'customer' || user.role === 'user') && 'Customer'}
                       </span>
                     </div>
-                    <button className="logout-btn-header" onClick={() => { setMobileOpen(false); handleLogout(); }}>
+                    <button className="logout-btn-header" onClick={handleLogout}>
                       Logout
                     </button>
                   </div>
@@ -199,65 +211,41 @@ const Header = () => {
         </div>
       </header>
 
+      {/* Auth Modal with new Login/Register components */}
       {showAuthModal && (
         <div className="auth-modal-overlay" onClick={handleAuthModalClose}>
-          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={handleAuthModalClose}>✕</button>
+          <div className="auth-modal-wrapper" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={handleAuthModalClose}>
+              ✕
+            </button>
 
-            <div className="modal-header">
-              <h2>{authMode === 'login' ? 'Login' : 'Register'}</h2>
-              <p>{authMode === 'login' ? 'Login to your account' : 'Create a new account'}</p>
+            <div className="auth-modal-tabs">
+              <button 
+                className={`auth-tab ${authMode === 'login' ? 'active' : ''}`}
+                onClick={() => setAuthMode('login')}
+              >
+                Login
+              </button>
+              <button 
+                className={`auth-tab ${authMode === 'register' ? 'active' : ''}`}
+                onClick={() => setAuthMode('register')}
+              >
+                Register
+              </button>
             </div>
 
-            <div className="modal-body">
-              {error && <div className="error-message">{error}</div>}
-
-              <form onSubmit={authMode === 'login' ? handleLogin : handleRegister}>
-                {authMode === 'register' && (
-                  <div className="form-group">
-                    <label>নাম *</label>
-                    <input type="text" name="name" placeholder="আপনার নাম লিখুন" value={formData.name} onChange={handleInputChange} required />
-                  </div>
-                )}
-
-                <div className="form-group">
-                  <label>Email *</label>
-                  <input type="email" name="email" placeholder="example@email.com" value={formData.email} onChange={handleInputChange} required />
-                </div>
-
-                {authMode === 'register' && (
-                  <div className="form-group">
-                    <label>Mobile Number *</label>
-                    <input type="tel" name="phone" placeholder="01712345678" value={formData.phone} onChange={handleInputChange} maxLength="11" required />
-                  </div>
-                )}
-
-                <div className="form-group">
-                  <label>Password *</label>
-                  <input type="password" name="password" placeholder="••••••••" value={formData.password} onChange={handleInputChange} required />
-                </div>
-
-                <button type="submit" className="submit-btn" disabled={loadingForm}>
-                  {loadingForm ? 'Please wait...' : (authMode === 'login' ? 'Login' : 'Register')}
-                </button>
-              </form>
-
-              <div className="modal-footer">
-                {authMode === 'login' ? (
-                  <p>Don't have an account? <button className="switch-mode-btn" onClick={() => setAuthMode('register')}>Register here</button></p>
-                ) : (
-                  <p>Already have an account? <button className="switch-mode-btn" onClick={() => setAuthMode('login')}>Login here</button></p>
-                )}
-              </div>
-
-              <div className="test-credentials">
-                <p className="test-title">Test Login Credentials:</p>
-                <div className="test-users">
-                  <div className="test-user"><strong>Admin:</strong> <span>admin@khulnatravels.com / admin123</span></div>
-                  <div className="test-user"><strong>Staff:</strong> <span>counter1@khulnatravels.com / staff123</span></div>
-                  <div className="test-user"><strong>Customer:</strong> <span>rahim@example.com / password123</span></div>
-                </div>
-              </div>
+            <div className="auth-modal-content">
+              {authMode === 'login' ? (
+                <Login 
+                  onLogin={handleLoginSuccess}
+                  onSwitchToRegister={handleSwitchToRegister}
+                />
+              ) : (
+                <Register 
+                  onRegister={handleRegisterSuccess}
+                  onSwitchToLogin={handleSwitchToLogin}
+                />
+              )}
             </div>
           </div>
         </div>

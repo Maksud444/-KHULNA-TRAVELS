@@ -7,308 +7,276 @@ const BusListPage = () => {
   const navigate = useNavigate();
   const searchData = location.state || {};
 
-  const [buses, setBuses] = useState([]);
-  const [road, setRoad] = useState(null);
+  const [busesWithTrips, setBusesWithTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  const [filters, setFilters] = useState({
-    busType: 'all',
-    timeCategory: 'all',
-    sortBy: 'departure'
-  });
+
 
   const API_BASE_URL = 'https://backoffice.khulnatravels.net/api/v1';
 
-  // Fetch road and buses
+  // Fetch trips and group by bus
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTrips = async () => {
       try {
         setLoading(true);
+        setError(null);
 
-        // Fetch road data if roadId is provided
-        if (searchData.roadId) {
-          await fetchRoadData();
+        console.log('🔄 Fetching trips from API...');
+        console.log('📍 Search Data:', searchData);
+
+        const url = `${API_BASE_URL}/trip`;
+        console.log('📡 API URL:', url);
+
+        const response = await fetch(url);
+        console.log('📥 Response Status:', response.status);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // Fetch buses for this road
-        await fetchBuses();
+        const data = await response.json();
+        console.log('✅ Full API Response:', data);
 
+        if (!data.success) {
+          throw new Error(data.message || 'Failed to fetch trips');
+        }
+
+        if (!data.data || !Array.isArray(data.data)) {
+          throw new Error('Invalid data format');
+        }
+
+        const trips = data.data;
+        console.log('📊 Total trips:', trips.length);
+        console.log('📊 First trip:', trips[0]);
+
+        // Filter trips based on search criteria
+        let filteredTrips = trips;
+
+        // Filter by origin and destination
+        if (searchData.from || searchData.to) {
+          filteredTrips = trips.filter(trip => {
+            if (!trip.busId || !trip.busId.roadId) return false;
+
+            const origin = trip.busId.roadId.origin?.toLowerCase();
+            const destination = trip.busId.roadId.destination?.toLowerCase();
+            
+            const fromMatch = !searchData.from || origin === searchData.from.toLowerCase();
+            const toMatch = !searchData.to || destination === searchData.to.toLowerCase();
+
+            return fromMatch && toMatch;
+          });
+
+          console.log(`🔍 Filtered by route: ${filteredTrips.length} trips`);
+        }
+
+        // Filter by date
+        if (searchData.date) {
+          filteredTrips = filteredTrips.filter(trip => {
+            if (!trip.journeyDate) return false;
+            const tripDate = new Date(trip.journeyDate).toISOString().split('T')[0];
+            const searchDate = new Date(searchData.date).toISOString().split('T')[0];
+            return tripDate === searchDate;
+          });
+
+          console.log(`🔍 Filtered by date: ${filteredTrips.length} trips`);
+        }
+
+        // Filter only active trips
+        filteredTrips = filteredTrips.filter(trip => trip.isActive === true);
+        console.log(`🔍 Active trips: ${filteredTrips.length}`);
+
+        // Group trips by busId
+        const grouped = groupTripsByBus(filteredTrips);
+        console.log('🚌 Grouped buses:', grouped.length);
+        
+        setBusesWithTrips(grouped);
         setLoading(false);
+
       } catch (err) {
-        console.error('Error fetching data:', err);
-        setError(err.message);
+        console.error('❌ Error:', err);
+        setError(err.message || 'Failed to load trips');
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [searchData]);
+    fetchTrips();
+  }, [searchData.from, searchData.to, searchData.date]);
 
-  // Fetch road information
-  const fetchRoadData = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/roads/${searchData.roadId}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        const roadData = data.success ? data.data : data.road || data;
-        setRoad(roadData);
-        console.log('Road Data:', roadData);
-      }
-    } catch (err) {
-      console.error('Error fetching road:', err);
-    }
-  };
-
-  // Fetch buses for the road
-  const fetchBuses = async () => {
-    try {
-      let url = `${API_BASE_URL}/buses`;
-      
-      // Add roadId filter if available
-      if (searchData.roadId) {
-        url += `?roadId=${searchData.roadId}`;
-      }
-
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch buses');
-      }
-
-      const data = await response.json();
-      console.log('Buses API Response:', data);
-
-      // Handle different response structures
-      let busesData = [];
-      if (data.success && data.data) {
-        busesData = Array.isArray(data.data) ? data.data : [data.data];
-      } else if (Array.isArray(data)) {
-        busesData = data;
-      } else if (data.buses) {
-        busesData = data.buses;
-      }
-
-      setBuses(busesData);
-    } catch (err) {
-      console.error('Error fetching buses:', err);
-      throw err;
-    }
-  };
-
-  // Get fare from road stops or bus
-  const getFare = (bus) => {
-    if (!bus) return searchData.price || 650;
-
-    // Use price from search data (calculated from road stops)
-    if (searchData.price) {
-      return searchData.price;
-    }
-
-    // Fallback to bus base fare
-    return bus.base_fare || bus.baseFare || 650;
-  };
-
-  // Get boarding time from timings array
-  const getBoardingTime = (bus) => {
-    if (!bus || !bus.timings || !Array.isArray(bus.timings)) {
-      return 'N/A';
-    }
-
-    // Return first timing as boarding time
-    return bus.timings[0] || 'N/A';
-  };
-
-  // Get arrival time - calculate from timings
-  const getArrivalTime = (bus) => {
-    if (!bus || !bus.timings || !Array.isArray(bus.timings)) {
-      return 'N/A';
-    }
-
-    // Return last timing as arrival time
-    return bus.timings[bus.timings.length - 1] || 'N/A';
-  };
-
-  // Calculate duration
-  const calculateDuration = (bus) => {
-    const boardingTime = getBoardingTime(bus);
-    const arrivalTime = getArrivalTime(bus);
-
-    if (boardingTime === 'N/A' || arrivalTime === 'N/A') {
-      return 'N/A';
-    }
-
-    try {
-      const boarding = parseTime(boardingTime);
-      let arrival = parseTime(arrivalTime);
-
-      if (boarding === null || arrival === null) {
-        return 'N/A';
-      }
-
-      // Handle next-day arrival
-      if (arrival < boarding) {
-        arrival += 24 * 60;
-      }
-
-      const durationMinutes = arrival - boarding;
-      const hours = Math.floor(durationMinutes / 60);
-      const minutes = durationMinutes % 60;
-
-      return `${hours}h ${minutes}m`;
-    } catch (e) {
-      return 'N/A';
-    }
-  };
-
-  // Parse time string to minutes
-  const parseTime = (timeStr) => {
-    if (!timeStr || typeof timeStr !== 'string') return null;
-
-    try {
-      const parts = timeStr.trim().split(' ');
-      if (parts.length !== 2) return null;
-
-      const [time, period] = parts;
-      const timeParts = time.split(':');
-      
-      if (timeParts.length < 2) return null;
-
-      let hours = parseInt(timeParts[0], 10);
-      let minutes = parseInt(timeParts[1], 10);
-
-      if (isNaN(hours) || isNaN(minutes)) return null;
-
-      if (period === 'PM' && hours !== 12) hours += 12;
-      if (period === 'AM' && hours === 12) hours = 0;
-
-      return hours * 60 + minutes;
-    } catch (e) {
-      return null;
-    }
-  };
-
-  // Get time category color
-  const getTimeCategoryColor = (category) => {
-    if (!category) return '#757575';
+  // Group trips by bus
+  const groupTripsByBus = (trips) => {
+    const busGroups = {};
     
+    trips.forEach(trip => {
+      if (!trip.busId || !trip.busId._id) {
+        console.warn('⚠️ Trip without busId:', trip._id);
+        return;
+      }
+
+      const busId = trip.busId._id;
+      
+      if (!busGroups[busId]) {
+        busGroups[busId] = {
+          busId: busId,
+          busName: trip.busId.name,
+          busNumber: trip.busId.busNumber,
+          coachNumber: trip.busId.coachNumber,
+          capacity: trip.busId.capacity,
+          thumbnail: trip.busId.thumbnail,
+          timings: trip.busId.timings || [],
+          roadId: trip.busId.roadId,
+          driver: trip.busId.driver,
+          supervisor: trip.busId.supervisor,
+          trips: []
+        };
+      }
+
+      busGroups[busId].trips.push({
+        _id: trip._id,
+        journeyDate: trip.journeyDate,
+        departureTime: trip.departureTime,
+        totalSeats: trip.totalSeats,
+        bookedSeats: trip.bookedSeats || [],
+        availableSeats: trip.totalSeats - (trip.bookedSeats?.length || 0),
+        fare: trip.fare,
+        isActive: trip.isActive,
+        createdAt: trip.createdAt,
+        updatedAt: trip.updatedAt
+      });
+    });
+
+    return Object.values(busGroups);
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('bn-BD', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  // Format time to 12-hour
+  const formatTime = (time) => {
+    if (!time) return 'N/A';
+    
+    try {
+      const [hours, minutes] = time.split(':').map(Number);
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = hours % 12 || 12;
+      return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+    } catch (e) {
+      return time;
+    }
+  };
+
+  // Calculate arrival time
+  const calculateArrivalTime = (departureTime, roadStops) => {
+    if (!departureTime) return 'N/A';
+    
+    // If stops available, use last stop time
+    if (roadStops && roadStops.length > 0) {
+      const lastStop = roadStops[roadStops.length - 1];
+      if (lastStop.time) {
+        return formatTime(lastStop.time);
+      }
+    }
+    
+    // Otherwise, estimate +6 hours
+    try {
+      const [hours, minutes] = departureTime.split(':').map(Number);
+      const arrivalHours = (hours + 6) % 24;
+      return formatTime(`${String(arrivalHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`);
+    } catch (e) {
+      return 'N/A';
+    }
+  };
+
+  // Get time category
+  const getTimeCategory = (departureTime) => {
+    if (!departureTime) return '';
+    
+    try {
+      const [hours] = departureTime.split(':').map(Number);
+      
+      if (hours >= 6 && hours < 12) return 'morning';
+      if (hours >= 12 && hours < 17) return 'afternoon';
+      if (hours >= 17 && hours < 21) return 'evening';
+      return 'night';
+    } catch (e) {
+      return '';
+    }
+  };
+
+  const getCategoryLabel = (category) => {
+    const labels = {
+      morning: 'Morning',
+      afternoon: 'Afternoon',
+      evening: 'Evening',
+      night: 'Night'
+    };
+    return labels[category] || '';
+  };
+
+  const getCategoryColor = (category) => {
     const colors = {
       morning: '#4caf50',
       afternoon: '#ff9800',
       evening: '#f44336',
       night: '#9c27b0'
     };
-    
-    return colors[String(category).toLowerCase()] || '#757575';
+    return colors[category] || '#757575';
   };
 
-  // Get time category label
-  const getTimeCategoryLabel = (category) => {
-    if (!category) return '';
-    
-    const labels = {
-      morning: 'সকাল',
-      afternoon: 'দুপুর',
-      evening: 'সন্ধ্যা',
-      night: 'রাত'
-    };
-    
-    return labels[String(category).toLowerCase()] || '';
-  };
-
-  // Detect time category from boarding time
-  const detectTimeCategory = (bus) => {
-    const boardingTime = getBoardingTime(bus);
-    if (boardingTime === 'N/A') return '';
-
-    const timeInMinutes = parseTime(boardingTime);
-    if (timeInMinutes === null) return '';
-
-    // Morning: 6:00 AM - 11:59 AM
-    if (timeInMinutes >= 360 && timeInMinutes < 720) return 'morning';
-    // Afternoon: 12:00 PM - 4:59 PM
-    if (timeInMinutes >= 720 && timeInMinutes < 1020) return 'afternoon';
-    // Evening: 5:00 PM - 8:59 PM
-    if (timeInMinutes >= 1020 && timeInMinutes < 1260) return 'evening';
-    // Night: 9:00 PM - 5:59 AM
-    return 'night';
-  };
-
-  // Apply filters and sorting
-  const getFilteredAndSortedBuses = () => {
-    let filtered = [...buses];
-
-    // Filter by bus type
-    if (filters.busType !== 'all') {
-      filtered = filtered.filter(bus => {
-        if (!bus || !bus.bus_type) return false;
-        return String(bus.bus_type).toLowerCase() === filters.busType.toLowerCase();
-      });
-    }
-
-    // Filter by time category
-    if (filters.timeCategory !== 'all') {
-      filtered = filtered.filter(bus => {
-        const category = bus.time_category || detectTimeCategory(bus);
-        return String(category).toLowerCase() === filters.timeCategory.toLowerCase();
-      });
-    }
-
-    // Sort buses
-    filtered.sort((a, b) => {
-      try {
-        switch (filters.sortBy) {
-          case 'departure': {
-            const timeA = parseTime(getBoardingTime(a));
-            const timeB = parseTime(getBoardingTime(b));
-            if (timeA === null || timeB === null) return 0;
-            return timeA - timeB;
-          }
-          case 'price-low':
-            return getFare(a) - getFare(b);
-          case 'price-high':
-            return getFare(b) - getFare(a);
-          case 'seats': {
-            const seatsA = a.available_seats || a.availableSeats || 0;
-            const seatsB = b.available_seats || b.availableSeats || 0;
-            return seatsB - seatsA;
-          }
-          default:
-            return 0;
-        }
-      } catch (e) {
-        return 0;
-      }
-    });
-
-    return filtered;
+  // Get all buses (no filtering)
+  const getFilteredBuses = () => {
+    return busesWithTrips;
   };
 
   // Handle seat selection
-  const handleSelectSeats = (bus) => {
-    if (!bus) return;
-
+  const handleSelectSeats = (bus, trip) => {
     navigate('/seat-selection', {
       state: {
-        bus: bus,
-        searchData: searchData,
-        road: road,
-        boardingTime: getBoardingTime(bus),
-        arrivalTime: getArrivalTime(bus),
-        fare: getFare(bus)
+        bus: {
+          _id: bus.busId,
+          name: bus.busName,
+          busNumber: bus.busNumber,
+          coachNumber: bus.coachNumber,
+          capacity: bus.capacity,
+          thumbnail: bus.thumbnail,
+          roadId: bus.roadId,
+          driver: bus.driver,
+          supervisor: bus.supervisor
+        },
+        trip: {
+          _id: trip._id,
+          journeyDate: trip.journeyDate,
+          departureTime: trip.departureTime,
+          totalSeats: trip.totalSeats,
+          bookedSeats: trip.bookedSeats,
+          availableSeats: trip.availableSeats,
+          fare: trip.fare
+        },
+        searchData: searchData
       }
     });
   };
 
-  const filteredBuses = getFilteredAndSortedBuses();
+  const filteredBuses = getFilteredBuses();
 
   if (loading) {
     return (
       <div className="bus-list-page">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>বাস খোঁজা হচ্ছে...</p>
+          <p>Searching for buses...</p>
         </div>
       </div>
     );
@@ -318,9 +286,9 @@ const BusListPage = () => {
     return (
       <div className="bus-list-page">
         <div className="error-container">
-          <h3>দুঃখিত, কিছু ভুল হয়েছে</h3>
+          <h3>Sorry, something went wrong</h3>
           <p>{error}</p>
-          <button onClick={() => navigate('/')}>হোমপেজে ফিরে যান</button>
+          <button onClick={() => navigate('/')}>Go back to homepage</button>
         </div>
       </div>
     );
@@ -332,186 +300,194 @@ const BusListPage = () => {
       <div className="search-summary">
         <div className="search-info">
           <h2>
-            {searchData.from || 'যেকোনো স্থান'} → {searchData.to || 'যেকোনো স্থান'}
+            {searchData.from || 'Any place'} → {searchData.to || 'Any place'}
           </h2>
           <p>
-            {searchData.date || 'আজ'} | {searchData.passengers || 1} জন যাত্রী
+            {searchData.date ? formatDate(searchData.date) : 'All dates'}
           </p>
-          {road && road.roadName && (
-            <p className="road-name">রুট: {road.roadName}</p>
-          )}
         </div>
         <button 
           className="modify-search-btn"
           onClick={() => navigate('/')}
         >
-          খোঁজ পরিবর্তন করুন
+          Change search
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="filters-container">
-        <div className="filter-group">
-          <label>বাসের ধরন:</label>
-          <select 
-            value={filters.busType}
-            onChange={(e) => setFilters({...filters, busType: e.target.value})}
-          >
-            <option value="all">সকল</option>
-            <option value="ac">AC</option>
-            <option value="non ac">NON AC</option>
-          </select>
-        </div>
 
-        <div className="filter-group">
-          <label>সময়:</label>
-          <select
-            value={filters.timeCategory}
-            onChange={(e) => setFilters({...filters, timeCategory: e.target.value})}
-          >
-            <option value="all">সকল সময়</option>
-            <option value="morning">সকাল</option>
-            <option value="afternoon">দুপুর</option>
-            <option value="evening">সন্ধ্যা</option>
-            <option value="night">রাত</option>
-          </select>
-        </div>
-
-        <div className="filter-group">
-          <label>সাজান:</label>
-          <select
-            value={filters.sortBy}
-            onChange={(e) => setFilters({...filters, sortBy: e.target.value})}
-          >
-            <option value="departure">ছাড়ার সময়</option>
-            <option value="price-low">কম দাম</option>
-            <option value="price-high">বেশি দাম</option>
-            <option value="seats">আসন সংখ্যা</option>
-          </select>
-        </div>
-      </div>
 
       {/* Results Count */}
       <div className="results-count">
-        <p>{filteredBuses.length}টি বাস পাওয়া গেছে</p>
+        <p>{filteredBuses.length} buses found</p>
       </div>
 
       {/* Bus List */}
       <div className="bus-list">
         {filteredBuses.length === 0 ? (
           <div className="no-buses">
-            <h3>কোনো বাস পাওয়া যায়নি</h3>
-            <p>অন্য রুট বা তারিখ চেষ্টা করুন</p>
+            <h3>No buses found</h3>
+            <p>Try changing route or date</p>
+            <button onClick={() => navigate('/')}>Search again</button>
           </div>
         ) : (
-          filteredBuses.map((bus, index) => {
-            if (!bus) return null;
-
-            const busId = bus._id || bus.id || bus.busNumber || `bus-${index}`;
-            const busName = bus.name || 'Bus';
-            const busType = bus.bus_type || bus.busType || 'NON AC';
-            const coachNumber = bus.coach_number || bus.coachNumber || bus.busNumber || 'N/A';
-            const timeCategory = bus.time_category || bus.timeCategory || detectTimeCategory(bus);
-            const totalSeats = bus.total_seats || bus.capacity || 40;
-            const availableSeats = bus.available_seats || bus.availableSeats || 0;
-            const amenities = bus.amenities || [];
-
-            return (
-              <div key={busId} className="bus-card">
-                {/* Bus Header */}
-                <div className="bus-card-header">
-                  <div className="bus-info">
-                    <h3>{busName}</h3>
-                    <div className="bus-meta">
-                      <span className="bus-type-badge">{busType}</span>
-                      {timeCategory && (
-                        <span 
-                          className="time-category-badge"
-                          style={{ 
-                            backgroundColor: getTimeCategoryColor(timeCategory),
-                            color: 'white',
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            fontSize: '12px'
-                          }}
-                        >
-                          {getTimeCategoryLabel(timeCategory)}
-                        </span>
-                      )}
-                      <span className="coach-number">কোচ: {coachNumber}</span>
-                    </div>
-                  </div>
-                  <div className="bus-fare">
-                    <span className="fare-label">ভাড়া</span>
-                    <span className="fare-amount">৳{getFare(bus)}</span>
-                  </div>
-                </div>
-
-                {/* Bus Route */}
-                <div className="bus-route">
-                  <div className="route-point">
-                    <div className="route-location">{searchData.from}</div>
-                    <div className="route-time">{getBoardingTime(bus)}</div>
-                  </div>
-                  
-                  <div className="route-line">
-                    <div className="route-duration">{calculateDuration(bus)}</div>
-                    <div className="route-arrow">→</div>
-                  </div>
-                  
-                  <div className="route-point">
-                    <div className="route-location">{searchData.to}</div>
-                    <div className="route-time">{getArrivalTime(bus)}</div>
-                  </div>
-                </div>
-
-                {/* Amenities */}
-                {amenities && amenities.length > 0 && (
-                  <div className="bus-amenities">
-                    {amenities.slice(0, 4).map((amenity, idx) => (
-                      <span key={idx} className="amenity-badge">{amenity}</span>
-                    ))}
-                    {amenities.length > 4 && (
-                      <span className="amenity-badge">+{amenities.length - 4} আরও</span>
+          filteredBuses.map((bus) => (
+            <div key={bus.busId} className="bus-card">
+              {/* Bus Header */}
+              <div className="bus-card-header">
+                <div className="bus-info">
+                  <div className="bus-thumbnail">
+                    {bus.thumbnail ? (
+                      <img src={bus.thumbnail} alt={bus.busName} style={{width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px'}} />
+                    ) : (
+                      <div className="bus-icon" style={{width: '80px', height: '80px', background: '#f0f0f0', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px'}}>🚌</div>
                     )}
                   </div>
-                )}
-
-                {/* Bus Footer */}
-                <div className="bus-card-footer">
-                  <div className="seats-info">
-                    <span className="seats-available">{availableSeats} আসন</span>
-                    <span className="seats-total">/ {totalSeats}</span>
+                  <div style={{marginLeft: '15px'}}>
+                    <h3 style={{margin: '0 0 5px 0', fontSize: '20px', color: '#03256c'}}>{bus.busName}</h3>
+                    <div className="bus-meta" style={{display: 'flex', gap: '15px', fontSize: '14px', color: '#666'}}>
+                      <span>Coach: {bus.coachNumber}</span>
+                      <span>Bus No: {bus.busNumber}</span>
+                      <span>Capacity: {bus.capacity} seats</span>
+                    </div>
+                    {bus.roadId && (
+                      <div style={{marginTop: '5px', fontSize: '13px', color: '#888'}}>
+                        Route: {bus.roadId.origin} → {bus.roadId.destination}
+                      </div>
+                    )}
                   </div>
-                  <button 
-                    className="select-seat-btn"
-                    onClick={() => handleSelectSeats(bus)}
-                    disabled={availableSeats === 0}
-                  >
-                    আসন দেখুন
-                  </button>
                 </div>
               </div>
-            );
-          })
+
+              {/* Trips List */}
+              <div className="trips-list" style={{marginTop: '20px'}}>
+                <div className="trips-header" style={{background: '#f5f5f5', padding: '10px 15px', borderRadius: '5px', marginBottom: '10px'}}>
+                  <h4 style={{margin: 0, fontSize: '16px', color: '#03256c'}}>Available trips ({bus.trips.length})</h4>
+                </div>
+
+                {bus.trips.map((trip) => {
+                  const arrivalTime = calculateArrivalTime(trip.departureTime, bus.roadId?.stops);
+                  
+                  return (
+                    <div 
+                      key={trip._id} 
+                      className="trip-row" 
+                      onClick={() => handleSelectSeats(bus, trip)}
+                      style={{
+                        border: '1px solid #e0e0e0', 
+                        borderRadius: '8px', 
+                        padding: '20px', 
+                        marginBottom: '15px', 
+                        background: '#fff',
+                        cursor: trip.availableSeats > 0 ? 'pointer' : 'not-allowed',
+                        opacity: trip.availableSeats > 0 ? 1 : 0.6,
+                        transition: 'all 0.3s'
+                      }}
+                      onMouseOver={(e) => {
+                        if (trip.availableSeats > 0) {
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.boxShadow = 'none';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      {/* Route */}
+                      <div style={{marginBottom: '15px', paddingBottom: '15px', borderBottom: '1px solid #f0f0f0'}}>
+                        <div style={{fontSize: '13px', color: '#888', marginBottom: '5px'}}>Route</div>
+                        <div style={{fontSize: '18px', fontWeight: 'bold', color: '#03256c'}}>
+                          {bus.roadId?.origin || searchData.from} → {bus.roadId?.destination || searchData.to}
+                        </div>
+                      </div>
+
+                      {/* Times */}
+                      <div style={{display: 'flex', gap: '30px', marginBottom: '15px', flexWrap: 'wrap'}}>
+                        <div>
+                          <div style={{fontSize: '13px', color: '#888', marginBottom: '5px'}}>Departure time</div>
+                          <div style={{fontSize: '20px', fontWeight: 'bold', color: '#03256c'}}>
+                            {formatTime(trip.departureTime)}
+                          </div>
+                        </div>
+                        <div style={{display: 'flex', alignItems: 'center', color: '#ccc', fontSize: '24px'}}>→</div>
+                        <div>
+                          <div style={{fontSize: '13px', color: '#888', marginBottom: '5px'}}>Arrival time</div>
+                          <div style={{fontSize: '20px', fontWeight: 'bold', color: '#03256c'}}>
+                            {arrivalTime}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Journey Date */}
+                      <div style={{marginBottom: '15px', padding: '10px', background: '#f9f9f9', borderRadius: '5px'}}>
+                        <span style={{fontSize: '13px', color: '#888'}}>📅 Journey date: </span>
+                        <span style={{fontSize: '15px', fontWeight: '600', color: '#333'}}>
+                          {formatDate(trip.journeyDate)}
+                        </span>
+                      </div>
+
+                      {/* Seats and Fare */}
+                      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px'}}>
+                        <div style={{display: 'flex', gap: '25px', alignItems: 'center'}}>
+                          <div>
+                            <span style={{fontSize: '13px', color: '#888'}}>🪑 Available seats: </span>
+                            <span style={{fontSize: '18px', fontWeight: 'bold', color: trip.availableSeats > 0 ? '#4caf50' : '#f44336'}}>
+                              {trip.availableSeats}
+                            </span>
+                          </div>
+                          <div>
+                            <span style={{fontSize: '13px', color: '#888'}}>💺 Total seats: </span>
+                            <span style={{fontSize: '18px', fontWeight: 'bold', color: '#333'}}>
+                              {trip.totalSeats}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
+                          <div style={{textAlign: 'right'}}>
+                            <div style={{fontSize: '13px', color: '#888'}}>Fare</div>
+                            <div style={{fontSize: '28px', fontWeight: 'bold', color: '#03256c'}}>
+                              ৳{trip.fare}
+                            </div>
+                          </div>
+                          <div style={{
+                            background: trip.availableSeats > 0 ? '#4caf50' : '#ccc',
+                            color: 'white',
+                            padding: '8px 16px',
+                            borderRadius: '20px',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                          }}>
+                            {trip.availableSeats > 0 ? 'View seats →' : 'No seats'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Driver/Supervisor Info - Removed */}
+            </div>
+          ))
         )}
       </div>
 
       {/* FAQ Section */}
-      <div className="faq-section">
-        <h3>সাধারণ প্রশ্নাবলী</h3>
+      <div className="faq-section" style={{marginTop: '40px', padding: '30px', background: '#f9f9f9', borderRadius: '10px'}}>
+        <h3 style={{marginBottom: '20px', color: '#03256c'}}>Frequently Asked Questions</h3>
         <div className="faq-list">
-          <div className="faq-item">
-            <h4>কিভাবে টিকেট বুক করবো?</h4>
-            <p>বাস নির্বাচন করুন, আসন বাছুন, এবং পেমেন্ট সম্পন্ন করুন।</p>
+          <div className="faq-item" style={{marginBottom: '15px'}}>
+            <h4 style={{color: '#333', marginBottom: '8px'}}>How to book tickets?</h4>
+            <p style={{color: '#666', margin: 0}}>Select bus, choose seats, and complete payment.</p>
+          </div>
+          <div className="faq-item" style={{marginBottom: '15px'}}>
+            <h4 style={{color: '#333', marginBottom: '8px'}}>Can tickets be cancelled?</h4>
+            <p style={{color: '#666', margin: 0}}>Can be cancelled up to 24 hours before journey.</p>
           </div>
           <div className="faq-item">
-            <h4>টিকেট বাতিল করা যাবে?</h4>
-            <p>যাত্রার ২৪ ঘণ্টা আগে পর্যন্ত বাতিল করা যাবে।</p>
-          </div>
-          <div className="faq-item">
-            <h4>পেমেন্ট কিভাবে করবো?</h4>
-            <p>bKash, Nagad, Rocket বা ক্রেডিট কার্ড দিয়ে পেমেন্ট করতে পারবেন।</p>
+            <h4 style={{color: '#333', marginBottom: '8px'}}>How to make payment?</h4>
+            <p style={{color: '#666', margin: 0}}>You can pay with bKash, Nagad, Rocket or credit card.</p>
           </div>
         </div>
       </div>

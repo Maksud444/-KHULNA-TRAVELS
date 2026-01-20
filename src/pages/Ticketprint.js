@@ -34,7 +34,7 @@ const TicketPrint = ({ booking }) => {
           <div className="company-info">
             <h1>খুলনা ট্রাভেলস</h1>
             <p>KHULNA TRAVELS</p>
-            <p className="tagline">আপনার নিরাপদ যাত্রার সঙ্গী</p>
+            <p className="tagline">Your safe journey companion</p>
           </div>
           <div className="ticket-type">
             <span className="badge">কাউন্টার টিকেট</span>

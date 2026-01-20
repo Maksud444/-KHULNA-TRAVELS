@@ -8,14 +8,13 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
     name: '',
     email: '',
     phone: '',
-    password: '',
-    confirmPassword: '',
-    role: 'user'
+    password: ''
   });
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const API_BASE_URL = 'https://backoffice.khulnatravels.net/api/v1';
 
@@ -40,13 +39,13 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
 
     // Validation
     if (!formData.name || !formData.name.trim()) {
-      setError('নাম দিন (Name is required)');
+      setError('Name is required');
       setLoading(false);
       return;
     }
 
     if (!formData.email || !formData.email.trim()) {
-      setError('ইমেইল দিন (Email is required)');
+      setError('Email is required');
       setLoading(false);
       return;
     }
@@ -54,13 +53,13 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      setError('সঠিক ইমেইল দিন (Invalid email format)');
+      setError('Invalid email format');
       setLoading(false);
       return;
     }
 
     if (!formData.phone || !formData.phone.trim()) {
-      setError('মোবাইল নম্বর দিন (Phone number is required)');
+      setError('Phone number is required');
       setLoading(false);
       return;
     }
@@ -68,19 +67,13 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
     // Phone validation (Bangladesh format)
     const phoneRegex = /^01\d{9}$/;
     if (!phoneRegex.test(formData.phone)) {
-      setError('সঠিক মোবাইল নম্বর দিন - ১১ ডিজিট (01XXXXXXXXX)');
+      setError('Enter valid phone number - 11 digits (01XXXXXXXXX)');
       setLoading(false);
       return;
     }
 
     if (!formData.password || formData.password.length < 6) {
-      setError('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে (Password must be at least 6 characters)');
-      setLoading(false);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('পাসওয়ার্ড মিলছে না (Passwords do not match)');
+      setError('Password must be at least 6 characters');
       setLoading(false);
       return;
     }
@@ -88,13 +81,13 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
     console.log('✅ All validations passed');
 
     try {
-      // Prepare data for backend
+      // Prepare data for backend - role is always 'user'
       const registrationData = {
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         phone: formData.phone.trim(),
         password: formData.password,
-        role: formData.role || 'customer'
+        role: 'user'
       };
 
       console.log('📤 Sending registration data to backend:', registrationData);
@@ -114,19 +107,8 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
 
       const data = await response.json();
       console.log('📥 Registration response data:', data);
-      console.log('📥 Response structure:', {
-        success: data.success,
-        message: data.message,
-        hasUser: !!data.user,
-        hasData: !!data.data,
-        hasToken: !!data.token
-      });
 
       // Handle different response structures
-      // Backend might return: { success, data: { user }, token }
-      // Or: { success, user, token }
-      // Or: { success, message }
-      
       const isSuccess = response.ok || data.success;
       const userData = data.user || data.data?.user || data.data;
       const token = data.token || data.data?.token;
@@ -156,7 +138,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
           const userName = userData.name;
           const userEmail = userData.email;
           const userPhone = userData.phone;
-          const userRole = userData.role || 'customer';
+          const userRole = 'user'; // Always user
 
           localStorage.setItem('userId', userId);
           localStorage.setItem('userName', userName);
@@ -176,36 +158,22 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
           });
         }
 
-        setSuccess('✅ রেজিস্ট্রেশন সফল হয়েছে! Redirecting...');
+        setSuccess('✅ Registration successful! Redirecting...');
         
         // Call parent callback
         if (onRegister) {
           onRegister(userData);
         }
 
-        // Redirect based on role after 1 second
+        // Redirect to user dashboard after 1 second
         setTimeout(() => {
-          const userRole = userData?.role || 'customer';
-          console.log('👤 User role:', userRole);
-          console.log('➡️ Redirecting...');
-
-          if (userRole === 'admin') {
-            navigate('/admin/dashboard');
-          } else if (userRole === 'staff' || userRole === 'counter_staff') {
-            navigate('/staff/dashboard');
-          } else {
-            navigate('/dashboard');
-          }
+          console.log('➡️ Redirecting to dashboard...');
+          navigate('/dashboard');
         }, 1500);
 
       } else {
         // Registration failed
         console.log('❌ Registration failed');
-        console.log('❌ Reason: Response not OK or no user data');
-        console.log('❌ Response status:', response.status);
-        console.log('❌ Data.success:', data.success);
-        console.log('❌ User data:', userData);
-        
         const errorMsg = message || data.error || 'Registration failed. Please try again.';
         console.log('❌ Error message:', errorMsg);
         setError(errorMsg);
@@ -213,16 +181,13 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
 
     } catch (err) {
       console.error('💥 Registration error (catch block):', err);
-      console.error('💥 Error type:', err.name);
-      console.error('💥 Error message:', err.message);
-      console.error('💥 Error stack:', err.stack);
       
-      let errorMessage = 'রেজিস্ট্রেশন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন। (Registration failed. Please try again.)';
+      let errorMessage = 'Registration failed. Please try again.';
       
       if (err.message.includes('fetch')) {
-        errorMessage = 'সার্ভারের সাথে সংযোগ করতে সমস্যা। (Cannot connect to server)';
+        errorMessage = 'Cannot connect to server';
       } else if (err.message.includes('JSON')) {
-        errorMessage = 'সার্ভার থেকে ভুল রেসপন্স এসেছে। (Invalid server response)';
+        errorMessage = 'Invalid server response';
       }
       
       setError(errorMessage);
@@ -235,7 +200,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
     <div className="register-container">
       <div className="register-form">
         <h2 className="register-title">Create Account</h2>
-        <p className="register-subtitle">খুলনা ট্রাভেলসে যোগ দিন</p>
+        <p className="register-subtitle">Join Khulna Travels</p>
 
         {error && (
           <div className="error-message">
@@ -252,14 +217,14 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Name */}
+          {/* Full Name */}
           <div className="form-group">
-            <label htmlFor="name">নাম (Name) *</label>
+            <label htmlFor="name">Full Name *</label>
             <input
               type="text"
               id="name"
               name="name"
-              placeholder="আপনার নাম লিখুন"
+              placeholder="Enter your full name"
               value={formData.name}
               onChange={handleChange}
               required
@@ -270,7 +235,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
 
           {/* Email */}
           <div className="form-group">
-            <label htmlFor="email">ইমেইল (Email) *</label>
+            <label htmlFor="email">Email *</label>
             <input
               type="email"
               id="email"
@@ -286,7 +251,7 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
 
           {/* Phone */}
           <div className="form-group">
-            <label htmlFor="phone">মোবাইল নম্বর (Phone) *</label>
+            <label htmlFor="phone">Phone Number *</label>
             <input
               type="tel"
               id="phone"
@@ -299,56 +264,37 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
               disabled={loading}
               autoComplete="tel"
             />
-            <small className="input-hint">১১ ডিজিট (01XXXXXXXXX)</small>
+            <small className="input-hint">11 digits (01XXXXXXXXX)</small>
           </div>
 
-          {/* Password */}
-          <div className="form-group">
-            <label htmlFor="password">পাসওয়ার্ড (Password) *</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="কমপক্ষে ৬ অক্ষর"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              disabled={loading}
-              minLength="6"
-              autoComplete="new-password"
-            />
-          </div>
-
-          {/* Confirm Password */}
-          <div className="form-group">
-            <label htmlFor="confirmPassword">পাসওয়ার্ড নিশ্চিত করুন *</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              placeholder="পাসওয়ার্ড আবার লিখুন"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              disabled={loading}
-              autoComplete="new-password"
-            />
-          </div>
-
-          {/* Role */}
-          <div className="form-group">
-            <label htmlFor="role">Account Type</label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              disabled={loading}
-            >
-              <option value="customer">Customer (কাস্টমার)</option>
-              <option value="staff">Counter Staff (স্টাফ)</option>
-              <option value="admin">Admin (এডমিন)</option>
-            </select>
+          {/* Password - Single field only */}
+          <div className="form-group password-field">
+            <label htmlFor="password">Password *</label>
+            <div className="password-input-wrapper" style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                name="password"
+                placeholder="At least 6 characters"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                minLength="6"
+                autoComplete="new-password"
+                style={{ paddingRight: '40px' }}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
+            <small className="input-hint">Must be at least 6 characters</small>
           </div>
 
           {/* Submit Button */}
@@ -357,21 +303,28 @@ const Register = ({ onRegister, onSwitchToLogin }) => {
             className="submit-btn"
             disabled={loading}
           >
-            {loading ? 'Creating Account...' : 'Register'}
+            {loading ? (
+              <>
+                <span className="spinner"></span>
+                Creating Account...
+              </>
+            ) : (
+              'Register'
+            )}
           </button>
         </form>
 
         {/* Switch to Login */}
         <div className="form-footer">
           <p>
-            ইতিমধ্যে অ্যাকাউন্ট আছে?{' '}
+            Already have an account?{' '}
             <button
               type="button"
               className="switch-btn"
               onClick={onSwitchToLogin}
               disabled={loading}
             >
-              লগইন করুন
+              Login
             </button>
           </p>
         </div>

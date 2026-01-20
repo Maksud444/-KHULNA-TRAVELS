@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
-const Login = ({ onSwitchToRegister }) => {
+const Login = ({ onSwitchToRegister, onLogin }) => {
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -11,6 +11,7 @@ const Login = ({ onSwitchToRegister }) => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const API_BASE_URL = 'https://backoffice.khulnatravels.net/api/v1';
 
@@ -50,13 +51,13 @@ const Login = ({ onSwitchToRegister }) => {
 
     // Validation
     if (!formData.email || !formData.email.trim()) {
-      setError('ইমেইল দিন');
+      setError('Enter email');
       setLoading(false);
       return;
     }
 
     if (!formData.password || !formData.password.trim()) {
-      setError('পাসওয়ার্ড দিন');
+      setError('Enter password');
       setLoading(false);
       return;
     }
@@ -80,130 +81,104 @@ const Login = ({ onSwitchToRegister }) => {
       console.log('📥 Response Status:', response.status);
       console.log('📥 Response OK:', response.ok);
 
-      const data = await response.json();
-      
-      // ⭐ DETAILED LOGGING - SEE EVERYTHING ⭐
-      console.log('📥 FULL Response Data:', JSON.stringify(data, null, 2));
-      console.log('📥 Response Keys:', Object.keys(data));
-      console.log('📥 Has accessToken?', 'accessToken' in data);
-      console.log('📥 Has token?', 'token' in data);
-      console.log('📥 Has data?', 'data' in data);
-      console.log('📥 Has user?', 'user' in data);
-
-      // ⭐ CHECK ALL POSSIBLE TOKEN LOCATIONS ⭐
-      const token = 
-        data.accessToken || 
-        data.token || 
-        data.data?.accessToken || 
-        data.data?.token ||
-        data.access_token ||
-        null;
-
-      console.log('🔑 Token found:', !!token);
-      if (token) {
-        console.log('🔑 Token value:', token.substring(0, 50) + '...');
+      // Try to parse JSON safely
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        console.warn('⚠️ Could not parse JSON response:', jsonErr);
       }
 
-      // ⭐ CHECK IF LOGIN WAS SUCCESSFUL ⭐
-      const isSuccess = response.ok && token;
+      console.log('📥 FULL Response Data:', JSON.stringify(data, null, 2));
 
-      console.log('✅ Is Success?', isSuccess);
+      // Align success detection with Register.js
+      const isSuccess = response.ok || data.success;
 
-      if (isSuccess) {
+      // Extract token and user data in multiple possible shapes
+      const token = data.token || data.accessToken || data.data?.token || data.data?.accessToken || data.access_token || null;
+      const userData = data.user || data.data?.user || data.data || null;
+
+      console.log('🔍 Parsed data:', { isSuccess, token, userData });
+
+      if (isSuccess && (token || userData)) {
         console.log('✅✅✅ LOGIN SUCCESS! ✅✅✅');
-        
-        // Save token
-        localStorage.setItem('token', token);
-        console.log('💾 Token saved');
 
-        // Extract user info from response or token
+        // Save token if present
+        if (token) {
+          localStorage.setItem('token', token);
+          console.log('💾 Token saved');
+        }
+
+        // Normalize and save user info similar to Register
         let userName = formData.email.split('@')[0];
         let userEmail = formData.email;
-        let userRole = 'customer';
+        let userRole = 'user';
         let userId = '';
+        let userPhone = '';
 
-        // Try to get user data from response
-        if (data.user) {
-          userName = data.user.name || userName;
-          userEmail = data.user.email || userEmail;
-          userRole = data.user.role || userRole;
-          userId = data.user._id || data.user.id || '';
-        } else if (data.data?.user) {
-          userName = data.data.user.name || userName;
-          userEmail = data.data.user.email || userEmail;
-          userRole = data.data.user.role || userRole;
-          userId = data.data.user._id || data.data.user.id || '';
+        if (userData) {
+          userName = userData.name || userName;
+          userEmail = userData.email || userEmail;
+          userRole = userData.role || userRole;
+          userId = userData._id || userData.id || userData.userId || userId;
+          userPhone = userData.phone || userPhone;
         }
 
-        // Try to decode token
-        try {
-          const base64Url = token.split('.')[1];
-          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-          const jsonPayload = decodeURIComponent(
-            atob(base64)
-              .split('')
-              .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-              .join('')
-          );
-          const decoded = JSON.parse(jsonPayload);
-          console.log('🔓 Decoded token:', decoded);
-          
-          userId = userId || decoded.id || decoded.userId || '';
-          userRole = decoded.role || userRole;
-        } catch (err) {
-          console.log('⚠️ Could not decode token');
+        // Try to decode token for extra info
+        if (token) {
+          try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(
+              atob(base64)
+                .split('')
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+            );
+            const decoded = JSON.parse(jsonPayload);
+            console.log('🔓 Decoded token:', decoded);
+            userId = userId || decoded.id || decoded.userId || '';
+            userRole = decoded.role || userRole;
+          } catch (err) {
+            console.log('⚠️ Could not decode token');
+          }
         }
 
-        console.log('👤 User Info:', {
-          userId,
-          userName,
-          userEmail,
-          userRole
-        });
-
-        // Save user data
+        // Persist user data to localStorage (same keys as Register)
         localStorage.setItem('userId', userId);
         localStorage.setItem('userName', userName);
         localStorage.setItem('userEmail', userEmail);
-        localStorage.setItem('userPhone', '');
+        localStorage.setItem('userPhone', userPhone);
         localStorage.setItem('role', userRole);
-        
-        const userObject = {
+        localStorage.setItem('user', JSON.stringify({
+          _id: userId,
           id: userId,
           name: userName,
           email: userEmail,
+          phone: userPhone,
           role: userRole
-        };
-        localStorage.setItem('user', JSON.stringify(userObject));
+        }));
 
-        console.log('💾 All data saved to localStorage');
+        console.log('💾 User data saved to localStorage');
 
         // Show success toast
-        showToast(`✅ স্বাগতম, ${userName}!`, 'success');
+        showToast(`✅ Welcome, ${userName}!`, 'success');
 
-        // Role-based redirect
-        const role = userRole.toLowerCase().trim();
-        let redirectPath = '/customer-dashboard';
-        
-        if (role === 'admin') {
-          redirectPath = '/admin-dashboard';
-        } else if (role === 'staff' || role === 'counter_staff') {
-          redirectPath = '/staff-dashboard';
+        // Call optional onLogin callback
+        if (typeof onLogin === 'function') {
+          try { onLogin(userData || { name: userName, email: userEmail, id: userId }); } catch (e) { /* ignore */ }
         }
 
-        console.log('➡️ Redirecting to:', redirectPath);
-
-        // Redirect with page reload
+        // Redirect to dashboard (same as Register)
         setTimeout(() => {
-          window.location.href = redirectPath;
+          navigate('/dashboard');
         }, 500);
 
       } else {
         // Login failed
         console.log('❌❌❌ LOGIN FAILED ❌❌❌');
-        console.log('Reason: No token found in response');
         console.log('Response data:', data);
-        
+
         const errorMsg = data.message || data.error || 'Invalid email or password';
         setError(errorMsg);
         showToast(`❌ ${errorMsg}`, 'error');
@@ -212,7 +187,7 @@ const Login = ({ onSwitchToRegister }) => {
     } catch (err) {
       console.error('💥💥💥 LOGIN ERROR 💥💥💥');
       console.error('Error:', err);
-      const errorMsg = 'লগইন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।';
+      const errorMsg = 'Problem logging in. Please try again.';
       setError(errorMsg);
       showToast(`❌ ${errorMsg}`, 'error');
     } finally {
@@ -224,7 +199,7 @@ const Login = ({ onSwitchToRegister }) => {
     <div className="login-container">
       <div className="login-form">
         <h2 className="login-title">Login to Khulna Travels</h2>
-        <p className="login-subtitle">স্বাগতম! আপনার অ্যাকাউন্টে লগইন করুন</p>
+        <p className="login-subtitle">Welcome! Login to your account</p>
 
         {error && (
           <div className="error-message">
@@ -235,7 +210,7 @@ const Login = ({ onSwitchToRegister }) => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">ইমেইল (Email) *</label>
+            <label htmlFor="email">Email *</label>
             <input
               type="email"
               id="email"
@@ -248,35 +223,47 @@ const Login = ({ onSwitchToRegister }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">পাসওয়ার্ড (Password) *</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="আপনার পাসওয়ার্ড লিখুন"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              disabled={loading}
-            />
+          <div className="form-group password-field">
+            <label htmlFor="password">Password *</label>
+            <div className="password-input-wrapper" style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                style={{ paddingRight: '40px' }}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? 'লগইন হচ্ছে...' : 'Login'}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
         <div className="form-footer">
           <p>
-            অ্যাকাউন্ট নেই?{' '}
+            Don't have an account?{' '}
             <button
               type="button"
               className="switch-btn"
               onClick={onSwitchToRegister}
               disabled={loading}
             >
-              রেজিস্টার করুন
+              Register
             </button>
           </p>
         </div>
@@ -307,6 +294,10 @@ const Login = ({ onSwitchToRegister }) => {
         .toast-error {
           border-left: 4px solid #f44336;
         }
+
+        /* Password toggle styles */
+        .password-toggle { background: none; border: none; cursor: pointer; font-size: 18px; padding: 4px; }
+        .password-input-wrapper input { padding-right: 44px; }
       `}} />
     </div>
   );

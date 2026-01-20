@@ -39,11 +39,11 @@ const AdminLogin = () => {
         // Navigate to admin dashboard
         navigate('/admin/dashboard');
       } else {
-        setError(data.message || 'লগইন ব্যর্থ হয়েছে');
+        setError(data.message || 'Login failed');
       }
     } catch (err) {
       console.error('Login error:', err);
-      setError('সার্ভার এ সমস্যা হয়েছে');
+      setError('Server error occurred');
     } finally {
       setLoading(false);
     }

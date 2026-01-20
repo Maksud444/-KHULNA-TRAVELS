@@ -212,7 +212,7 @@ const UserDashboard = () => {
 
   // Cancel booking
   const handleCancelBooking = async (bookingId) => {
-    if (!window.confirm('আপনি কি নিশ্চিত এই বুকিং বাতিল করতে চান?')) {
+    if (!window.confirm('Are you sure you want to cancel this booking?')) {
       return;
     }
 

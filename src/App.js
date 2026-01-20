@@ -5,6 +5,9 @@ import Header from './components/Header';
 
 // Import your pages
 import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
+import RoutesPage from './pages/RoutesPage';
+import ContactPage from './pages/ContactPage';
 import BusListPage from './pages/BusListPage';
 import SeatSelectionPage from './pages/SeatSelectionPage';
 import PaymentPage from './pages/PaymentPage';
@@ -114,6 +117,9 @@ function App() {
               {/* Public Routes */}
               <Route path="/" element={<HomePage />} />
               <Route path="/home" element={<Navigate to="/" replace />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/routes" element={<RoutesPage />} />
+              <Route path="/contact" element={<ContactPage />} />
               <Route path="/bus-list" element={<BusListPage />} />
               <Route path="/seat-selection" element={<SeatSelectionPage />} />
               <Route path="/payment" element={<PaymentPage />} />

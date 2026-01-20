@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './SeatSelectionPage.css';
 
@@ -6,120 +6,75 @@ const SeatSelectionPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // HomePage থেকে selection data
-  const searchData = location.state?.searchData || {
-    from: 'Khulna',
-    to: 'Kuakata',
-    journeyDate: new Date().toISOString().split('T')[0]
-  };
-
-  // BusListPage থেকে selected bus data (BusListPage sends { bus, searchData })
-  const selectedBus = useMemo(
-    () => location.state?.bus || location.state?.selectedBus || {},
-    [location.state]
-  );
-
+  const { bus, trip, searchData } = location.state || {};
+  
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [mobileNumber, setMobileNumber] = useState('');
   const [boardingPoint, setBoardingPoint] = useState('');
-  const [droppingPoint, setDroppingPoint] = useState('');
-  const [busDetails, setBusDetails] = useState(null);
+  const [dropPoint, setDropPoint] = useState('');
+  const [passengerName, setPassengerName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [boardingPoints, setBoardingPoints] = useState([]);
+  const [roadsMap, setRoadsMap] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // If a bus object was passed from BusListPage, initialize details immediately
-  useEffect(() => {
-    if (selectedBus && Object.keys(selectedBus).length > 0) {
-      setBusDetails({
-        busName: selectedBus.name || selectedBus.busName || 'KHULNA TRAVELS',
-        operatorName: selectedBus.operator || selectedBus.operatorName || 'KHULNA TRAVELS',
-        busType: selectedBus.type || selectedBus.busType || 'Non AC',
-        from: searchData.from,
-        to: searchData.to,
-        startingPoint: selectedBus.startPoint || searchData.from,
-        endPoint: selectedBus.endPoint || searchData.to,
-        departureTime: selectedBus.departureTime || '৫:০০ AM',
-        arrivalTime: selectedBus.arrivalTime || '৮:১৫ AM',
-        availableSeats: selectedBus.seatsAvailable || selectedBus.availableSeats || 40,
-        fare: selectedBus.fare || selectedBus.price || 500,
-        boardingPoints: selectedBus.boardingPoints || [],
-        droppingPoints: selectedBus.droppingPoints || []
-      });
-      setLoading(false);
-    }
-  }, [selectedBus, searchData.from, searchData.to]);
+  const API_BASE_URL = 'https://backoffice.khulnatravels.net/api/v1';
 
-  // Fetch bus details based on HomePage selection
+  // Fetch boarding points and roads map
   useEffect(() => {
-    const fetchBusDetails = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        
-        // API call with HomePage selection
-        const response = await fetch(
-          `/api/buses/${selectedBus.id || selectedBus.busId || ''}?from=${searchData.from}&to=${searchData.to}&date=${searchData.journeyDate}`
-        );
-        
-        const data = await response.json();
-        
-        setBusDetails({
-          busName: data.busName || selectedBus.name || selectedBus.busName || 'KHULNA TRAVELS',
-          operatorName: data.operatorName || selectedBus.operator || selectedBus.operatorName || 'SAKIRA PARIBAHAN',
-          busType: data.busType || selectedBus.type || selectedBus.busType || 'Non AC',
-          from: searchData.from,
-          to: searchData.to,
-          startingPoint: data.startingPoint || searchData.from,
-          endPoint: data.endPoint || searchData.to,
-          departureTime: data.departureTime || selectedBus.departureTime || '৫:০০ AM',
-          arrivalTime: data.arrivalTime || selectedBus.arrivalTime || '৮:১৫ AM',
-          availableSeats: data.availableSeats || selectedBus.availableSeats || 40,
-          fare: data.fare || selectedBus.fare || 500,
-          // HomePage selection অনুযায়ী boarding points
-          boardingPoints: data.boardingPoints || [],
-          // HomePage selection অনুযায়ী dropping points
-          droppingPoints: data.droppingPoints || []
-        });
-        
+
+        console.log('🔄 Fetching boarding points and roads...');
+
+        // Boarding points (fetch all and find by busId)
+        try {
+          const resp = await fetch(`${API_BASE_URL}/boarding`);
+          const data = await resp.json();
+          console.log('✅ Boarding Points Response:', data);
+          if (data.success && Array.isArray(data.data)) {
+            const busPoints = data.data.find(bp => bp.busId && bp.busId._id === bus._id);
+            if (busPoints && Array.isArray(busPoints.points)) {
+              setBoardingPoints(busPoints.points);
+              console.log('📍 Boarding Points:', busPoints.points);
+            }
+          }
+        } catch (e) {
+          console.warn('⚠️ Boarding fetch failed:', e);
+        }
+
+        // Roads map
+        try {
+          const rResp = await fetch(`${API_BASE_URL}/road`);
+          const rData = await rResp.json();
+          console.log('✅ Roads Response:', rData);
+          const map = {};
+          if (rData.success && Array.isArray(rData.data)) {
+            rData.data.forEach(r => {
+              if (r._id) map[r._id] = r;
+            });
+          }
+          setRoadsMap(map);
+          console.log('🛣️ Roads Map set:', Object.keys(map).length);
+        } catch (e) {
+          console.warn('⚠️ Roads fetch failed:', e);
+        }
+
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching bus details:', error);
-        
-        // Fallback data with HomePage selections
-        setBusDetails({
-          busName: selectedBus.busName || 'KHULNA TRAVELS',
-          operatorName: selectedBus.operator || 'KHULNA TRAVELS',
-          busType: selectedBus.type || 'Non AC',
-          from: searchData.from,
-          to: searchData.to,
-          startingPoint: searchData.from,
-          endPoint: searchData.to,
-          departureTime: selectedBus.departureTime || '৫:০০ AM',
-          arrivalTime: selectedBus.arrivalTime || '৮:১৫ AM',
-          availableSeats: selectedBus.availableSeats || 40,
-          fare: selectedBus.fare || 500,
-          boardingPoints: [],
-          droppingPoints: []
-        });
-        
+        console.error('❌ Error fetching boarding/roads:', error);
         setLoading(false);
       }
     };
 
-    fetchBusDetails();
-  }, [searchData.from, searchData.to, searchData.journeyDate, selectedBus]);
+    if (bus && bus._id) {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
+  }, [bus]);
 
-  if (loading || !busDetails) {
-    return (
-      <div className="seat-selection-page">
-        <div className="container">
-          <div style={{ textAlign: 'center', padding: '100px 0' }}>
-            <h2>Loading...</h2>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Sample seat layout (4 columns, 10 rows - typical bus layout)
+  // Seat Layout (10 rows x 4 seats per row)
   const seatLayout = [
     ['A1', 'A2', null, 'A3', 'A4'],
     ['B1', 'B2', null, 'B3', 'B4'],
@@ -133,321 +88,471 @@ const SeatSelectionPage = () => {
     ['J1', 'J2', null, 'J3', 'J4'],
   ];
 
-  // Seat status (sample data)
-  const seatStatus = {
-    'A1': 'booked-male',
-    'A2': 'booked-female',
-    'B3': 'blocked',
-    'C1': 'sold-male',
-    'D4': 'sold-female',
-    'H3': 'blocked',
-    // Rest are available by default
+  // Get seat status
+  const getSeatStatus = (seatNumber) => {
+    if (!seatNumber) return null;
+    
+    // Check if seat is booked from trip data
+    if (trip?.bookedSeats?.includes(seatNumber)) {
+      return 'booked';
+    }
+    
+    // Check if seat is selected by user
+    if (selectedSeats.includes(seatNumber)) {
+      return 'selected';
+    }
+    
+    return 'available';
   };
 
-  const getSeatStatus = (seat) => {
-    if (!seat) return null;
-    if (selectedSeats.includes(seat)) return 'selected';
-    return seatStatus[seat] || 'available';
-  };
-
-  const handleSeatClick = (seat) => {
-    if (!seat) return;
+  // Handle seat click
+  const handleSeatClick = (seatNumber) => {
+    if (!seatNumber) return;
     
-    const status = getSeatStatus(seat);
+    const status = getSeatStatus(seatNumber);
     
-    // Can't select booked, sold, or blocked seats
-    if (status === 'booked-male' || status === 'booked-female' || 
-        status === 'sold-male' || status === 'sold-female' || 
-        status === 'blocked') {
+    // Can't select booked seats
+    if (status === 'booked') {
       return;
     }
 
     // Toggle selection
-    if (selectedSeats.includes(seat)) {
-      setSelectedSeats(selectedSeats.filter(s => s !== seat));
+    if (selectedSeats.includes(seatNumber)) {
+      setSelectedSeats(selectedSeats.filter(s => s !== seatNumber));
     } else {
-      setSelectedSeats([...selectedSeats, seat]);
+      setSelectedSeats([...selectedSeats, seatNumber]);
     }
   };
 
-  const handleSubmit = () => {
+  // Format time
+  const formatTime = (time) => {
+    if (!time) return 'N/A';
+    try {
+      const [hours, minutes] = time.split(':').map(Number);
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = hours % 12 || 12;
+      return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+    } catch (e) {
+      return time;
+    }
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('bn-BD', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  // Determine per-seat fare based on selected drop point (stops.price or trip.fare for main destination)
+  const roadId = typeof bus?.roadId === 'string' ? bus.roadId : bus?.roadId?._id;
+  const roadInfo = (roadId && roadsMap[roadId]) ? roadsMap[roadId] : (bus?.roadId && typeof bus.roadId === 'object' ? bus.roadId : null);
+
+  const getPerSeatPrice = () => {
+    if (!dropPoint) return trip?.fare || 0;
+    if (roadInfo) {
+      // If dropPoint equals main destination
+      if (dropPoint === roadInfo.destination) return trip?.fare || 0;
+      const stop = (roadInfo.stops || []).find(s => s.name === dropPoint);
+      if (stop && stop.price) return stop.price;
+    }
+    // Fallback: check bus.roadId stops if roadInfo not available
+    const fallbackStops = (bus?.roadId && bus.roadId.stops) || [];
+    const f = fallbackStops.find(s => s.name === dropPoint);
+    if (f && f.price) return f.price;
+    return trip?.fare || 0;
+  };
+
+  // Keep per-seat and total in state so they update reliably when seats are selected
+  const [perSeatPriceState, setPerSeatPriceState] = useState(trip?.fare || 0);
+  const [totalAmountState, setTotalAmountState] = useState(0);
+
+  useEffect(() => {
+    const per = getPerSeatPrice();
+    setPerSeatPriceState(per);
+    setTotalAmountState((selectedSeats.length || 0) * per);
+  }, [selectedSeats.length, dropPoint, roadsMap, trip, bus]);
+
+  // Handle confirm booking
+  const handleConfirmBooking = () => {
+    // Validation
     if (selectedSeats.length === 0) {
-      alert('দয়া করে কমপক্ষে একটি সিট নির্বাচন করুন');
+      alert('Please select at least one seat');
       return;
     }
 
-    if (!mobileNumber) {
-      alert('দয়া করে মোবাইল নম্বর দিন');
+    if (!boardingPoint) {
+      alert('Please select a boarding point');
       return;
     }
 
-    if (!boardingPoint || !droppingPoint) {
-      alert('দয়া করে বোর্ডিং এবং ড্রপিং পয়েন্ট নির্বাচন করুন');
+    if (!dropPoint) {
+      alert('Please select a dropping point');
       return;
     }
 
-    // Navigate to payment page with all data (shape expected by PaymentPage)
-    const busToSend = busDetails
-      ? { ...busDetails, fare: busDetails.fare || busDetails.amount || 500 }
-      : { name: 'KHULNA TRAVELS', fare: 500, type: 'NON AC' };
+    if (!passengerName.trim()) {
+      alert('দয়া করে যাত্রীর নাম দিন');
+      return;
+    }
 
+    if (!phoneNumber || phoneNumber.length !== 11) {
+      alert('দয়া করে সঠিক মোবাইল নম্বর দিন (১১ ডিজিট)');
+      return;
+    }
+
+    // Navigate to payment page
     navigate('/payment', {
       state: {
-        bus: busToSend,
+        bus,
+        trip,
         selectedSeats,
         passengerDetails: {
-          name: '',
-          phone: mobileNumber,
+          name: passengerName,
+          phone: phoneNumber,
           boardingPoint,
-          droppingPoint
+          dropPoint
         },
-        searchData: searchData,
-        totalAmount,
-        journeyDate: searchData.journeyDate
+        totalAmount: totalAmountState,
+        perSeatPrice: perSeatPriceState,
+        searchData
       }
     });
   };
 
-  const seatFare = busDetails?.fare || 500;
-  const totalAmount = selectedSeats.length * seatFare;
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px 0' }}>
+        <h2>Loading...</h2>
+      </div>
+    );
+  }
+
+  if (!bus || !trip) {
+    return (
+      <div style={{ textAlign: 'center', padding: '100px 0' }}>
+        <h2>কোন ডেটা পাওয়া যায়নি</h2>
+        <button onClick={() => navigate('/')}>হোমপেজে ফিরে যান</button>
+      </div>
+    );
+  }
 
   return (
-    <div className="seat-selection-page">
-      <div className="container">
-        {/* Sort & Filter Bar */}
-        <div className="sort-filter-bar">
-          <div className="sort-by">
-            <span className="sort-icon">☰</span>
-            <span className="sort-label">SORT BY</span>
+    <div style={{ background: '#f5f5f5', minHeight: '100vh', padding: '20px 0' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '20px' }}>
+          
+          {/* Left Side - Seat Map */}
+          <div style={{ background: 'white', borderRadius: '10px', padding: '30px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            
+            {/* Legend */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginBottom: '30px', padding: '15px', background: '#f9f9f9', borderRadius: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '30px', height: '30px', background: '#d4edda', border: '2px solid #28a745', borderRadius: '5px' }}></div>
+                <span style={{ fontSize: '14px' }}>Available</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '30px', height: '30px', background: '#cce5ff', border: '2px solid #007bff', borderRadius: '5px' }}></div>
+                <span style={{ fontSize: '14px' }}>Selected</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '30px', height: '30px', background: '#f8d7da', border: '2px solid #dc3545', borderRadius: '5px' }}></div>
+                <span style={{ fontSize: '14px' }}>Booked</span>
+              </div>
+            </div>
+
+            {/* Driver Section */}
+            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '60px', height: '60px', background: '#333', borderRadius: '50%', color: 'white', fontSize: '30px' }}>
+                🚗
+              </div>
+              <div style={{ marginTop: '8px', fontSize: '14px', fontWeight: '600', color: '#666' }}>DRIVER</div>
+            </div>
+
+            {/* Seat Grid */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
+              {seatLayout.map((row, rowIndex) => (
+                <div key={rowIndex} style={{ display: 'flex', gap: '10px' }}>
+                  {row.map((seat, colIndex) => {
+                    if (!seat) {
+                      return <div key={colIndex} style={{ width: '50px', height: '50px' }}></div>;
+                    }
+
+                    const status = getSeatStatus(seat);
+                    let bgColor = '#d4edda';
+                    let borderColor = '#28a745';
+                    let cursor = 'pointer';
+
+                    if (status === 'selected') {
+                      bgColor = '#cce5ff';
+                      borderColor = '#007bff';
+                    } else if (status === 'booked') {
+                      bgColor = '#f8d7da';
+                      borderColor = '#dc3545';
+                      cursor = 'not-allowed';
+                    }
+
+                    return (
+                      <div
+                        key={colIndex}
+                        onClick={() => handleSeatClick(seat)}
+                        style={{
+                          width: '50px',
+                          height: '50px',
+                          background: bgColor,
+                          border: `2px solid ${borderColor}`,
+                          borderRadius: '5px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          cursor: cursor,
+                          transition: 'all 0.2s',
+                          userSelect: 'none'
+                        }}
+                        onMouseOver={(e) => {
+                          if (status !== 'booked') {
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                          }
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                      >
+                        {seat}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+
+            {/* Selected Seats Info */}
+            <div style={{ marginTop: '30px', padding: '15px', background: '#f9f9f9', borderRadius: '8px' }}>
+              <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
+                Selected Seats: <strong>{selectedSeats.length > 0 ? selectedSeats.join(', ') : 'None'}</strong>
+              </div>
+              <div style={{ fontSize: '14px', color: '#666' }}>
+                Count: <strong>{selectedSeats.length} / {trip.totalSeats}</strong>
+              </div>
+            </div>
           </div>
-          <div className="filter-options">
-            <button className="filter-btn">OPERATOR ⇅</button>
-            <button className="filter-btn">DEPARTURE TIME ⇅</button>
-            <button className="filter-btn">AVAILABLE SEATS ⇅</button>
-            <button className="filter-btn">FARE ⇅</button>
-            <button className="filter-by-btn">Filter By</button>
-          </div>
-        </div>
 
-        {/* Main Content */}
-        <div className="seat-selection-content">
-          {/* Left Side - Bus Info & Seat Map */}
-          <div className="left-section">
-            <div className="bus-info-card">
-              {/* Bus Information Header */}
-              <div className="bus-header">
-                <div className="bus-name-section">
-                  <h2 className="bus-operator">{busDetails.busName}</h2>
-                  <p className="bus-route">{busDetails.from} - {busDetails.to}</p>
-                  <p className="bus-type">({busDetails.busType})</p>
-                  <p className="boarding-info">
-                    <span className="info-label">Starting Point:</span> 
-                    <span className="info-value">{busDetails.startingPoint}</span>
-                  </p>
-                  <p className="boarding-info">
-                    <span className="info-label">End Point:</span> 
-                    <span className="info-value">{busDetails.endPoint}</span>
-                  </p>
+          {/* Right Side - Booking Summary */}
+          <div style={{ background: 'white', borderRadius: '10px', padding: '25px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', height: 'fit-content', position: 'sticky', top: '20px' }}>
+            
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '15px', borderBottom: '2px solid #f0f0f0' }}>
+              <div style={{ fontSize: '24px' }}>🎫</div>
+              <div>
+                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#03256c' }}>Booking Summary</div>
+                <div style={{ fontSize: '13px', color: '#888' }}>Review & confirm your ticket</div>
+              </div>
+            </div>
+
+            {/* Bus Info */}
+            <div style={{ marginBottom: '20px', padding: '15px', background: '#f9f9f9', borderRadius: '8px' }}>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: '#03256c', marginBottom: '8px' }}>
+                {bus.name}
+              </div>
+              <div style={{ fontSize: '13px', color: '#666', marginBottom: '5px' }}>
+                Bus No: {bus.busNumber}
+              </div>
+              <div style={{ display: 'flex', gap: '20px', fontSize: '13px', marginTop: '10px' }}>
+                <div>
+                  <div style={{ color: '#888' }}>📅 {formatDate(trip.journeyDate)}</div>
                 </div>
-
-                <div className="time-section">
-                  <div className="time-block">
-                    <p className="time-label">DEPARTURE TIME</p>
-                    <p className="time-value">{busDetails.departureTime}</p>
-                  </div>
-                  <div className="time-block">
-                    <p className="time-label">ARRIVAL TIME</p>
-                    <p className="time-value">{busDetails.arrivalTime}</p>
-                  </div>
-                </div>
-
-                <div className="seats-section">
-                  <p className="seats-label">SEATS AVAILABLE</p>
-                  <p className="seats-count">{busDetails.availableSeats}</p>
-                </div>
-
-                <div className="price-section">
-                  <div className="service-charge-badge">No Service Charge</div>
-                  <div className="price-display">
-                    <span className="currency">৳</span>
-                    <span className="amount">{seatFare}.00</span>
-                  </div>
-                  <button className="hide-seats-btn">Hide Seats</button>
-                  <p className="cancellation-policy">Cancellation Policy</p>
+                <div>
+                  <div style={{ color: '#888' }}>🕐 Departure: {formatTime(trip.departureTime)}</div>
                 </div>
               </div>
-
-              {/* Seat Legend */}
-              <div className="seat-legend">
-                <div className="legend-item">
-                  <div className="legend-icon selected"></div>
-                  <span>SELECTED</span>
-                </div>
-                <div className="legend-item">
-                  <div className="legend-icon sold-male"></div>
-                  <span>SOLD (M)</span>
-                </div>
-                <div className="legend-item">
-                  <div className="legend-icon sold-female"></div>
-                  <span>SOLD (F)</span>
-                </div>
-                <div className="legend-item">
-                  <div className="legend-icon booked-male"></div>
-                  <span>BOOKED (M)</span>
-                </div>
-                <div className="legend-item">
-                  <div className="legend-icon booked-female"></div>
-                  <span>BOOKED (F)</span>
-                </div>
+              <div style={{ marginTop: '10px', fontSize: '18px', fontWeight: 'bold', color: '#03256c' }}>
+                Total Amount: ৳{totalAmountState}
               </div>
+              <div style={{ fontSize: '13px', color: '#666' }}>
+                Per seat: ৳{perSeatPriceState}
+              </div>
+            </div>
 
-              {/* Seat Layout */}
-              <div className="seat-map-container">
-                <div className="driver-section">
-                  <div className="steering-wheel">⚙</div>
-                </div>
-
-                <div className="seat-grid">
-                  {seatLayout.map((row, rowIndex) => (
-                    <div key={rowIndex} className="seat-row">
-                      {row.map((seat, colIndex) => {
-                        if (!seat) {
-                          return <div key={colIndex} className="seat-gap"></div>;
-                        }
-
-                        const status = getSeatStatus(seat);
-                        const isClickable = status === 'available' || status === 'selected';
-
-                        return (
-                          <div
-                            key={colIndex}
-                            className={`seat ${status} ${isClickable ? 'clickable' : ''}`}
-                            onClick={() => handleSeatClick(seat)}
-                            title={`Seat ${seat} - ${status}`}
-                          >
-                            <div className="seat-icon">💺</div>
-                          </div>
-                        );
-                      })}
+            {/* Selected Seats */}
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#333', marginBottom: '10px' }}>Selected Seats</div>
+              {selectedSeats.length > 0 ? (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {selectedSeats.map((seat, index) => (
+                    <div key={index} style={{ 
+                      padding: '6px 12px', 
+                      background: '#cce5ff', 
+                      border: '1px solid #007bff',
+                      borderRadius: '5px', 
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      color: '#007bff'
+                    }}>
+                      {seat}
                     </div>
                   ))}
                 </div>
+              ) : (
+                <div style={{ fontSize: '13px', color: '#999', fontStyle: 'italic' }}>No seats selected yet</div>
+              )}
+            </div>
+
+            {/* Journey Points */}
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#333', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>🗺️</span>
+                <span>Journey Points</span>
               </div>
 
-              {/* Operator Footer */}
-              <div className="operator-footer">
-                <p>{busDetails.operatorName}</p>
+              {/* Boarding Point */}
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', fontSize: '13px', color: '#666', marginBottom: '5px' }}>
+                  Boarding Point *
+                </label>
+                <select
+                  value={boardingPoint}
+                  onChange={(e) => setBoardingPoint(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '1px solid #ddd',
+                    borderRadius: '5px',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
+                >
+                  <option value="">Select boarding point</option>
+                  {boardingPoints.map((point, index) => (
+                    <option key={index} value={point.name}>
+                      {point.name} - {point.time}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Drop Point */}
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', fontSize: '13px', color: '#666', marginBottom: '5px' }}>
+                  Drop Point *
+                </label>
+                <select
+                  value={dropPoint}
+                  onChange={(e) => setDropPoint(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '1px solid #ddd',
+                    borderRadius: '5px',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
+                >
+                  <option value="">Select drop point</option>
+                  {(roadInfo && Array.isArray(roadInfo.stops) ? roadInfo.stops : (bus?.roadId && bus.roadId.stops) || []).map((stop, index) => (
+                    <option key={index} value={stop.name}>
+                      {stop.name}
+                    </option>
+                  ))}
+                  <option value={(roadInfo && roadInfo.destination) || (bus.roadId && bus.roadId.destination)}>{(roadInfo && roadInfo.destination) || (bus.roadId && bus.roadId.destination)}</option>
+                </select>
               </div>
             </div>
-          </div>
 
-          {/* Right Side - Booking Form */}
-          <div className="right-section">
-            <div className="booking-form-card">
-              <div className="form-group">
-                <label>MOBILE NUMBER*</label>
+            {/* Passenger Details */}
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#333', marginBottom: '10px' }}>
+                Passenger Details
+              </div>
+
+              {/* Full Name */}
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', fontSize: '13px', color: '#666', marginBottom: '5px' }}>
+                  Passenger Full Name *
+                </label>
                 <input
-                  type="tel"
-                  placeholder="মোবাইল নম্বর লিখুন"
-                  value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value)}
-                  maxLength={11}
+                  type="text"
+                  value={passengerName}
+                  onChange={(e) => setPassengerName(e.target.value)}
+                  placeholder="Enter full name"
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '1px solid #ddd',
+                    borderRadius: '5px',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
                 />
               </div>
 
-              <button className="submit-btn" onClick={handleSubmit}>
-                Submit
-              </button>
-
-              <div className="form-group">
-                <label>BOARDING/DROPPING POINT:</label>
-                
-                <div className="sub-label">BOARDING POINT*</div>
-                <select 
-                  value={boardingPoint} 
-                  onChange={(e) => setBoardingPoint(e.target.value)}
-                >
-                  <option value="">Select boarding point</option>
-                  {busDetails.boardingPoints && busDetails.boardingPoints.length > 0 ? (
-                    busDetails.boardingPoints.map((point, index) => (
-                      <option key={index} value={point.name || point}>
-                        {point.name || point}
-                      </option>
-                    ))
-                  ) : (
-                    <option value={busDetails.from}>{busDetails.from}</option>
-                  )}
-                </select>
+              {/* Phone Number */}
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', fontSize: '13px', color: '#666', marginBottom: '5px' }}>
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="01xxxxxxxxx"
+                  maxLength={11}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '1px solid #ddd',
+                    borderRadius: '5px',
+                    fontSize: '14px',
+                    outline: 'none'
+                  }}
+                />
               </div>
-
-              <div className="form-group">
-                <div className="sub-label">DROPPING POINT*</div>
-                <select 
-                  value={droppingPoint} 
-                  onChange={(e) => setDroppingPoint(e.target.value)}
-                >
-                  <option value="">Select dropping point</option>
-                  {busDetails.droppingPoints && busDetails.droppingPoints.length > 0 ? (
-                    busDetails.droppingPoints.map((point, index) => (
-                      <option key={index} value={point.name || point}>
-                        {point.name || point}
-                      </option>
-                    ))
-                  ) : (
-                    <option value={busDetails.to}>{busDetails.to}</option>
-                  )}
-                </select>
-              </div>
-
-              {/* Seat Information */}
-              <div className="seat-info-box">
-                <h3>SEAT INFORMATION:</h3>
-                <div className="info-row">
-                  <span className="info-label">Seat Fare:</span>
-                  <span className="info-value">৳ {seatFare}</span>
-                </div>
-                            <div className="info-row">
-                              <span className="info-label">Departure Time:</span>
-                              <span className="info-value">{busDetails.departureTime || 'N/A'}</span>
-                            </div>
-                            <div className="info-row">
-                              <span className="info-label">Arrival Time:</span>
-                              <span className="info-value">{busDetails.arrivalTime || 'N/A'}</span>
-                            </div>
-                <div className="info-row">
-                  <span className="info-label">Service Charge:</span>
-                  <span className="info-value">৳ 0</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">Gateway Charge:</span>
-                  <span className="info-value">৳ 0</span>
-                </div>
-              </div>
-
-              {/* Selected Seats Summary */}
-              {selectedSeats.length > 0 && (
-                <div className="selected-seats-summary">
-                  <h3>নির্বাচিত সিট:</h3>
-                  <div className="selected-list">
-                    {selectedSeats.map((seat, index) => (
-                      <span key={index} className="selected-seat-tag">
-                        {seat}
-                        <button 
-                          className="remove-seat"
-                          onClick={() => handleSeatClick(seat)}
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                  <div className="total-amount">
-                    <span>মোট:</span>
-                    <span className="amount">৳{totalAmount}</span>
-                  </div>
-                </div>
-              )}
             </div>
+
+            {/* Confirm Button */}
+            <button
+              onClick={handleConfirmBooking}
+              disabled={selectedSeats.length === 0}
+              style={{
+                width: '100%',
+                padding: '15px',
+                background: selectedSeats.length > 0 ? '#007bff' : '#ccc',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: selectedSeats.length > 0 ? 'pointer' : 'not-allowed',
+                transition: 'all 0.3s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px'
+              }}
+              onMouseOver={(e) => {
+                if (selectedSeats.length > 0) {
+                  e.target.style.background = '#0056b3';
+                }
+              }}
+              onMouseOut={(e) => {
+                if (selectedSeats.length > 0) {
+                  e.target.style.background = '#007bff';
+                }
+              }}
+            >
+              <span>✓</span>
+              <span>Confirm Booking</span>
+            </button>
           </div>
         </div>
       </div>

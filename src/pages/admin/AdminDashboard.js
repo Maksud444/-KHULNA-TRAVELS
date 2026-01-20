@@ -173,7 +173,7 @@ const AdminDashboard = () => {
       });
 
       if (response.ok) {
-        alert('কাউন্টার স্টাফ সফলভাবে যোগ করা হয়েছে!');
+        alert('Counter staff added successfully!');
         setShowModal(false);
         setNewStaff({
           name: '',

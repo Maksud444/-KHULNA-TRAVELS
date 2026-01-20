@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './DatePicker.css';
 
-const DatePicker = ({ value, onChange, minDate, placeholder = 'তারিখ নির্বাচন করুন' }) => {
+const DatePicker = ({ value, onChange, minDate, placeholder = 'Select Date' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(value ? new Date(value) : null);
@@ -136,7 +136,7 @@ const DatePicker = ({ value, onChange, minDate, placeholder = 'তারিখ �
   const formatDisplayDate = (date) => {
     if (!date) return '';
     const day = date.getDate();
-    const month = monthNamesBengali[date.getMonth()];
+    const month = monthNamesEnglish[date.getMonth()];
     const year = date.getFullYear();
     return `${day} ${month}, ${year}`;
   };

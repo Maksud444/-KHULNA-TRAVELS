@@ -180,7 +180,7 @@ const CounterStaffDashboard = () => {
     
     // Validation
     if (!bookingForm.customerName || !bookingForm.customerPhone) {
-      alert('অনুগ্রহ করে গ্রাহকের নাম ও ফোন নম্বর দিন');
+      alert('Please enter customer name and phone number');
       return;
     }
 

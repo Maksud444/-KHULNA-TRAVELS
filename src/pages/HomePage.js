@@ -22,11 +22,12 @@ const HomePage = () => {
   const [popularRoutes, setPopularRoutes] = useState([]);
 
   // Hero Images
-  const heroImages = [
-    './images/Khulnatravelsdual.png',
-    './images/Khulnatravelswhite.png',
-    './images/Khulnatravelsgolden.png'
-  ];
+const heroImages = [
+  '/images/Khulnatravelsdual.png',
+  '/images/Khulnatravelswhite.png',
+  '/images/Khulnatravelsgolden.png'
+];
+
 
   const [searchData, setSearchData] = useState({
     from: '',

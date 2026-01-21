@@ -23,9 +23,9 @@ const HomePage = () => {
 
   // Hero Images
   const heroImages = [
-    '/images/Khulnatravelsgolden.png',
-    '/images/Khulnatravelswhite.png',
-    '/images/Khulnatravelsdual.png'
+    './images/Khulnatravelsdual.png',
+    './images/Khulnatravelswhite.png',
+    './images/Khulnatravelsgolden.png'
   ];
 
   const [searchData, setSearchData] = useState({
